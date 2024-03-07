@@ -1,0 +1,18 @@
+version: "3"
+
+networks:
+  backend:
+
+services:
+  app:
+    image: smudiscapstone/sirs_app
+    build: .
+    restart: always
+    ports:
+      - "8000:8000"
+    networks:
+      backend:
+        aliases:
+          - service_app
+    volumes:
+      - ./app:/app
