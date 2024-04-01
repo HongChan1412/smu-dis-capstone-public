@@ -2,6 +2,7 @@ from typing import Dict
 from fastapi import WebSocketDisconnect, WebSocket
 import logging
 import asyncssh
+import paramiko
 
 
 logging.basicConfig(level=logging.ERROR)
@@ -48,3 +49,29 @@ async def close_ssh_session(websocket: WebSocket):
 
 
 ssh_sessions: Dict[str, SSHSession] = {}
+
+
+async def get_swdict_debian(hostname: str, port: int, username: str, password: str):
+    command = "dpkg -l | awk '/^ii/ { gsub(/^[0-9]:/, \"\", $3); gsub(/-.*/, \"\", $3); gsub(/[a-zA-Z]+.*/, \"\", $3); gsub(/:.*/, \"\", $2); printf \"%s:%s\\n\", $2, $3 }'"
+    try:
+        async with asyncssh.connect(hostname, port=port, username=username, password=password) as conn:
+            result = await conn.run(command, check=True)
+            software_list = result.stdout.split("\n")
+            software_dict = [{"swname": item.split(":")[0], "version": item.split(":")[1]} for item in software_list if item]
+
+            return software_dict
+    except (asyncssh.Error, Exception) as e:
+        return str(e)
+
+
+async def get_swdict_redhat(hostname: str, port: int, username: str, password: str):
+    command = "rpm -qa --queryformat '%{NAME}:%{VERSION}\\n' | sort"
+    try:
+        async with asyncssh.connect(hostname, port=port, username=username, password=password) as conn:
+            result = await conn.run(command, check=True)
+            software_list = result.stdout.split("\n")
+            software_dict = [{"swname": item.split(":")[0], "version": item.split(":")[1]} for item in software_list if item]
+
+            return software_dict
+    except (asyncssh.Error, Exception) as e:
+        return str(e)

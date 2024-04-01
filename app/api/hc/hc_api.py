@@ -5,7 +5,7 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(
 from fastapi import WebSocket, Request, WebSocketDisconnect, APIRouter
 from fastapi.templating import Jinja2Templates
 
-from utils.ssh_utils import SSHSession, ssh_sessions, close_ssh_session
+from utils.ssh_utils import SSHSession, ssh_sessions, close_ssh_session, get_swdict_debian, get_swdict_redhat
 
 
 hc = APIRouter()
@@ -38,3 +38,14 @@ async def websocket_connect_endpoint(websocket: WebSocket, ip: str, port: int, u
                     await websocket.send_text(result)
     except WebSocketDisconnect:
         await close_ssh_session(websocket)
+
+
+@hc.get("/swdict/")
+async def get_swdict(hostname: str, port: int, username: str, password: str, os: str):
+    if os == "debian":
+        result = await get_swdict_debian(hostname, port, username, password)
+    elif os == "redhat":
+        result = await get_swdict_redhat(hostname, port, username, password)
+    else:
+        return {"error": "os error"}
+    return {"result": result}
