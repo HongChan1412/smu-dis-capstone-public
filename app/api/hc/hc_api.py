@@ -6,7 +6,8 @@ from fastapi import WebSocket, Request, WebSocketDisconnect, APIRouter
 from fastapi.templating import Jinja2Templates
 
 from utils.ssh_utils import SSHSession, ssh_sessions, close_ssh_session, get_swdict_debian, get_swdict_redhat
-
+from utils.nvd_utils import check_cpe_exist, load_software, save_software
+#from ...utils.nvd_utils import check_cpe_exist
 
 hc = APIRouter()
 
@@ -43,9 +44,31 @@ async def websocket_connect_endpoint(websocket: WebSocket, ip: str, port: int, u
 @hc.get("/swdict/")
 async def get_swdict(hostname: str, port: int, username: str, password: str, os: str):
     if os == "debian":
-        result = await get_swdict_debian(hostname, port, username, password)
+        results = await get_swdict_debian(hostname, port, username, password)
     elif os == "redhat":
-        result = await get_swdict_redhat(hostname, port, username, password)
+        results = await get_swdict_redhat(hostname, port, username, password)
     else:
         return {"error": "os error"}
-    return {"result": result}
+    software = load_software()
+
+    cpe_false_swname = software["CPE_False"]["swname"]
+    cpe_false_swname_version = software["CPE_False"]["swname:version"]
+    cpe_true = software["CPE_True"]
+
+    for result in results:
+        swname = result["swname"]
+        version = result["version"]
+        swname_version = f"{swname}:{version}"
+
+        if swname not in cpe_false_swname and swname_version not in cpe_false_swname_version and swname_version not in cpe_true:
+            software = check_cpe_exist(swname, version, software)
+
+    save_software(software)
+
+    return {"results": results}
+
+
+@hc.get("/nvds/")
+async def get_nvd(swname: str):
+    return {"result": check_cpe_exist(swname)}
+
