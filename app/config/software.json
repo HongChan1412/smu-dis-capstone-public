@@ -932,7 +932,8 @@
             "yum-metadata-parser",
             "yum-plugin-fastestmirror",
             "talk-server",
-            "tftp-server"
+            "tftp-server",
+            "talkd"
         ],
         "swname:version": [
             "acpid:2.0.28",
