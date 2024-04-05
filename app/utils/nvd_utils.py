@@ -16,7 +16,7 @@ def check_cpe_exist(swname: str, version: str, software: dict):
         response.raise_for_status()  # 200 OK 코드가 아니면 예외를 발생시킴
         data = response.json()
     except requests.exceptions.RequestException as e:
-        # print(f"데이터를 가져오는 중 오류 발생: {e}")
+        print(f"데이터를 가져오는 중 오류 발생: {e}")
         return software  # 예외 발생 시 현재의 software 상태를 반환
 
     found = False
@@ -24,7 +24,7 @@ def check_cpe_exist(swname: str, version: str, software: dict):
         for product in data["products"]:
             if f"{swname}:{version}" in product.get("cpe", {}).get("cpeName", ""):
                 software["CPE_True"][f"{swname}:{version}"] = product["cpe"]["cpeName"]
-                # print(f"swname: {swname}, cpe검색이 있고, 버전에 맞는것도 있음")
+                print(f"swname: {swname}, cpe검색이 있고, 버전에 맞는것도 있음")
                 found = True
                 break  # 일치하는 CPE를 찾으면 루프 종료
 
@@ -32,10 +32,27 @@ def check_cpe_exist(swname: str, version: str, software: dict):
         key = "swname" if not data.get("products") else "swname:version"
         value = swname if not data.get("products") else f"{swname}:{version}"
         software["CPE_False"][key].append(value)
-        # status_message = "cpe검색이 없음" if key == "swname" else "cpe검색은 있는데 버전에 맞는게 없음."
-        # print(f"swname: {swname}, {status_message}")
+        status_message = "cpe검색이 없음" if key == "swname" else "cpe검색은 있는데 버전에 맞는게 없음."
+        print(f"swname: {swname}, {status_message}")
 
-    return software
+    return software, found
+
+
+def search_nvd_cpe(cpename: str):
+    url = "https://services.nvd.nist.gov/rest/json/cves/2.0"
+    params = {"cpeName": cpename}
+    headers = {"apiKey": NVD_APIKEY}
+    print(cpename)
+
+    try:
+        response = requests.get(url, params=params, headers=headers)
+        response.raise_for_status()  # 200 OK 코드가 아니면 예외를 발생시킴
+        data = response.json()
+    except requests.exceptions.RequestException as e:
+        print(f"데이터를 가져오는 중 오류 발생: {e}")
+        return   # 예외 발생 시 현재의 software 상태를 반환
+
+    return data
 
 
 def load_software():
