@@ -1,12 +1,15 @@
 import os
 import sys
+import time
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))))
 
 from fastapi import WebSocket, Request, WebSocketDisconnect, APIRouter
 from fastapi.templating import Jinja2Templates
+from concurrent.futures import ThreadPoolExecutor
+
 
 from utils.ssh_utils import SSHSession, ssh_sessions, close_ssh_session, get_swdict_debian, get_swdict_redhat
-from utils.nvd_utils import check_cpe_exist, load_software, save_software, search_nvd_cpe
+from utils.nvd_utils import check_cpe_exist, load_software, save_software, search_nvd_cve
 #from ...utils.nvd_utils import check_cpe_exist
 
 hc = APIRouter()
@@ -56,21 +59,60 @@ async def get_swdict(hostname: str, port: int, username: str, password: str, os_
     cpe_true = software["CPE_True"]
     result = []
 
-    for sw in sw_list:
+    def proccess_softwware(sw, cpe_false_swname, cpe_false_swname_version, cpe_true):
         swname = sw["swname"]
         version = sw["version"]
         swname_version = f"{swname}:{version}"
+        result = {
+            "swname": swname,
+            "version": version,
+            "cpe": "",
+            "cve": "",
+            "found_cpe": False,
+            "found_cve": False,
+            "key": ""
+        }
 
         if swname_version in cpe_true:
-            cpename = software["CPE_True"][swname_version]
-            result.append({swname: search_nvd_cpe(cpename)})
+            result.update(search_nvd_cve(cpe_true[swname_version]))
 
         elif swname not in cpe_false_swname and swname_version not in cpe_false_swname_version:
-            software, is_found = check_cpe_exist(swname, version, software)
-            if is_found:
-                cpename = software["CPE_True"][swname_version]
-                result.append({swname: search_nvd_cpe(cpename)})
+            result.update(check_cpe_exist(swname, version))
+            if result["found_cpe"] == True:
+                result.update(search_nvd_cve(result["cpe"]))
+        return result
 
+    count = 0
+    len_sw_list = len(sw_list)
+
+    while True:
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            futures = [executor.submit(proccess_softwware, sw, cpe_false_swname, cpe_false_swname_version, cpe_true) for sw in sw_list]
+            sw_list = []
+            for future in futures:
+                swname = future.result()["swname"]
+                version = future.result()["version"]
+                swname_version = f"{swname}:{version}"
+                res = future.result()
+                if res["found_cve"] == "error" or res["found_cpe"] == "error":
+                    sw_list.append({
+                        "swname": swname,
+                        "version": version
+                    })
+                else:
+                    if res["found_cve"] == True:
+                        result.append({swname: res["cve"]})
+                    if res["found_cpe"] == True:
+                        software["CPE_True"].update({swname_version: res["cpe"]})
+                    elif res["found_cpe"] == False:
+                        if res["key"] == "swname":
+                            software["CPE_False"]["swname"].append(swname)
+                        elif res["key"] == "swname:version":
+                            software["CPE_False"]["swname:version"].append(swname_version)
+
+                    count += 1
+        if count == len_sw_list:
+            break
     save_software(software)
     return {"result": result}
 

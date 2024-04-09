@@ -6,53 +6,99 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from config.config import NVD_APIKEY
 
 
-def check_cpe_exist(swname: str, version: str, software: dict):
+
+
+# def check_cpe_exist(swname: str, version: str, software: dict):
+#     url = "https://services.nvd.nist.gov/rest/json/cpes/2.0"
+#     params = {"keywordSearch": swname}
+#     headers = {"apiKey": NVD_APIKEY}
+#
+#     try:
+#         response = requests.get(url, params=params, headers=headers)
+#         response.raise_for_status()  # 200 OK 코드가 아니면 예외를 발생시킴
+#         data = response.json()
+#     except requests.exceptions.RequestException as e:
+#         print(f"데이터를 가져오는 중 오류 발생: {e}")
+#         return software  # 예외 발생 시 현재의 software 상태를 반환
+#
+#     found = False
+#     if data.get("products"):
+#         for product in data["products"]:
+#             if f"{swname}:{version}" in product.get("cpe", {}).get("cpeName", ""):
+#                 software["CPE_True"][f"{swname}:{version}"] = product["cpe"]["cpeName"]
+#                 print(f"swname: {swname}, cpe검색이 있고, 버전에 맞는것도 있음")
+#                 found = True
+#                 break  # 일치하는 CPE를 찾으면 루프 종료
+#
+#     if not found:
+#         key = "swname" if not data.get("products") else "swname:version"
+#         value = swname if not data.get("products") else f"{swname}:{version}"
+#         software["CPE_False"][key].append(value)
+#         status_message = "cpe검색이 없음" if key == "swname" else "cpe검색은 있는데 버전에 맞는게 없음."
+#         print(f"swname: {swname}, {status_message}")
+#
+#     return software, found
+
+
+def check_cpe_exist(swname: str, version: str):
     url = "https://services.nvd.nist.gov/rest/json/cpes/2.0"
     params = {"keywordSearch": swname}
     headers = {"apiKey": NVD_APIKEY}
+    result = {
+        "found_cpe": False
+    }
 
     try:
         response = requests.get(url, params=params, headers=headers)
         response.raise_for_status()  # 200 OK 코드가 아니면 예외를 발생시킴
         data = response.json()
     except requests.exceptions.RequestException as e:
-        print(f"데이터를 가져오는 중 오류 발생: {e}")
-        return software  # 예외 발생 시 현재의 software 상태를 반환
+        print(f"데이터를 가져오는 중 오류 발생(check_cpe_exist): {e}")
+        result["found_cpe"] = "error"
+        return result  # 예외 발생 시 현재의 software 상태를 반환
 
-    found = False
     if data.get("products"):
         for product in data["products"]:
             if f"{swname}:{version}" in product.get("cpe", {}).get("cpeName", ""):
-                software["CPE_True"][f"{swname}:{version}"] = product["cpe"]["cpeName"]
                 print(f"swname: {swname}, cpe검색이 있고, 버전에 맞는것도 있음")
-                found = True
+                result["found_cpe"] = True
+                result["cpe"] = product["cpe"]["cpeName"]
                 break  # 일치하는 CPE를 찾으면 루프 종료
 
-    if not found:
+    if not result["found_cpe"]:
         key = "swname" if not data.get("products") else "swname:version"
-        value = swname if not data.get("products") else f"{swname}:{version}"
-        software["CPE_False"][key].append(value)
+        result["key"] = key
         status_message = "cpe검색이 없음" if key == "swname" else "cpe검색은 있는데 버전에 맞는게 없음."
         print(f"swname: {swname}, {status_message}")
 
-    return software, found
+    return result
 
 
-def search_nvd_cpe(cpename: str):
+def search_nvd_cve(cpename: str):
     url = "https://services.nvd.nist.gov/rest/json/cves/2.0"
     params = {"cpeName": cpename}
     headers = {"apiKey": NVD_APIKEY}
-    print(cpename)
 
     try:
         response = requests.get(url, params=params, headers=headers)
         response.raise_for_status()  # 200 OK 코드가 아니면 예외를 발생시킴
         data = response.json()
+        if not data.get("vulnerabilities"):
+            return {
+                "cpe": cpename,
+                "found_cve": False
+            }
+        return {
+            "cpe": cpename,
+            "found_cve": True,
+            "cve": data
+        }
     except requests.exceptions.RequestException as e:
-        print(f"데이터를 가져오는 중 오류 발생: {e}")
-        return   # 예외 발생 시 현재의 software 상태를 반환
-
-    return data
+        print(f"데이터를 가져오는 중 오류 발생(search_nvd_cve): {e}")
+        return {
+            "cpe": cpename,
+            "found_cve": "error",
+        }
 
 
 def load_software():
