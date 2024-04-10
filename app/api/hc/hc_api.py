@@ -4,13 +4,14 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(
 
 from fastapi import WebSocket, Request, WebSocketDisconnect, APIRouter
 from fastapi.templating import Jinja2Templates
-
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from utils.ssh_utils import SSHSession, ssh_sessions, close_ssh_session, get_swdict_debian, get_swdict_redhat
 from utils.nvd_utils import check_cpe_exist, search_nvd_cve
-from utils.software_utils import load_software, save_software
+from utils.software_utils import load_software, save_software, update_software_json
 
 hc = APIRouter()
+scheduler = AsyncIOScheduler()
 
 templates = Jinja2Templates(directory="templates")
 
@@ -116,8 +117,11 @@ async def get_swdict(hostname: str, port: int, username: str, password: str, os_
     save_software(software)
     return {"result": result}
 
+@hc.on_event("startup")
+async def update_software():
+    scheduler.add_job(update_software_json, 'cron', hour=2, minute=59)
+    scheduler.start()
 
 @hc.get("/nvds/")
 async def get_nvd(swname: str):
     return {"result": check_cpe_exist(swname)}
-
