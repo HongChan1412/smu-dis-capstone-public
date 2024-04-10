@@ -2,7 +2,7 @@ import json
 from utils.nvd_utils import search_cpe_swname, search_cpe_swname_version
 
 
-def load_software():
+def load_software() -> dict:
     filename = "./config/software2.json"
 
     try:

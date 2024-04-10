@@ -57,7 +57,7 @@ async def get_swdict(hostname: str, port: int, username: str, password: str, os_
     cpe_false_swname_version = software["CPE_False"]["swname:version"]
     cpe_true = software["CPE_True"]
 
-    def proccess_software(sw, cpe_true, cpe_false_swname, cpe_false_swname_version):
+    def proccess_software(sw: dict, cpe_true: dict, cpe_false_swname: list, cpe_false_swname_version: list) -> dict:
         swname = sw["swname"]
         version = sw["version"]
         swname_version = f"{swname}:{version}"
@@ -80,8 +80,6 @@ async def get_swdict(hostname: str, port: int, username: str, password: str, os_
         return result
 
     result = []
-    count = 0
-    len_sw_list = len(sw_list)
     while True:
         re_sw_list = []
         for sw in sw_list:
@@ -107,19 +105,20 @@ async def get_swdict(hostname: str, port: int, username: str, password: str, os_
                     elif res["key"] == "swname:version":
                         software["CPE_False"]["swname:version"].append(swname_version)
 
-                count += 1
-        if count == len_sw_list:
+        if not re_sw_list:
             break
-        sw_list = re_sw_list
-        # print(f"re_sw_list: {re_sw_list}")
+        else:
+            print(f"re_sw_list: {re_sw_list}")
+            sw_list = re_sw_list
 
-    # print(len(result))
+    print(f"len(result): {len(result)}")
     save_software(software)
     return {"result": result}
 
+
 @hc.on_event("startup")
 async def update_software():
-    scheduler.add_job(update_software_json, 'cron', hour=2, minute=59)
+    scheduler.add_job(update_software_json, 'cron', hour=0, minute=0)
     scheduler.start()
 
 @hc.get("/nvds/")
