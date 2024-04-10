@@ -3,7 +3,7 @@ from utils.nvd_utils import search_cpe_swname, search_cpe_swname_version
 
 
 def load_software() -> dict:
-    filename = "./config/software2.json"
+    filename = "./config/software.json"
 
     try:
         with open(filename, "r", encoding="utf-8") as file:
@@ -39,7 +39,7 @@ def load_software() -> dict:
 
 
 def save_software(software):
-    filename = "./config/software2.json"
+    filename = "./config/software.json"
     with open(filename, "w", encoding="utf-8") as file:
         json.dump(software, file, ensure_ascii=False, indent=4)
 
