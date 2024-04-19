@@ -2,7 +2,7 @@ import json
 from utils.nvd_utils import search_cpe_swname, search_cpe_swname_version
 
 
-def load_software() -> dict:
+async def load_software() -> dict:
     filename = "./config/software.json"
 
     try:
@@ -44,8 +44,8 @@ def save_software(software):
         json.dump(software, file, ensure_ascii=False, indent=4)
 
 
-def update_software_json():
-    software = load_software()
+async def update_software_json():
+    software = await load_software()
     cpe_false_swname = software["CPE_False"]["swname"]
     cpe_false_swname_version = software["CPE_False"]["swname:version"]
     print("update_software_json")
@@ -53,7 +53,7 @@ def update_software_json():
         re_cpe_false_swname = []
         for swname in cpe_false_swname:
             print(swname)
-            res = search_cpe_swname(swname)
+            res = await search_cpe_swname(swname)
             if res == "error":
                 re_cpe_false_swname.append(swname)
             else:
@@ -71,7 +71,7 @@ def update_software_json():
         re_cpe_false_swname_version = []
         for swname_version in cpe_false_swname_version:
             print(swname_version)
-            res = search_cpe_swname_version(swname_version)
+            res = await search_cpe_swname_version(swname_version)
             if res["found_cpe"] == "error":
                 re_cpe_false_swname_version.append(swname)
             else:
