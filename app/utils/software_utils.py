@@ -2,7 +2,7 @@ import json
 from utils.nvd_utils import search_cpe_swname, search_cpe_swname_version
 
 
-async def load_software() -> dict:
+def load_software() -> dict:
     filename = "./config/software.json"
 
     try:
@@ -45,7 +45,7 @@ def save_software(software):
 
 
 async def update_software_json():
-    software = await load_software()
+    software = load_software()
     cpe_false_swname = software["CPE_False"]["swname"]
     cpe_false_swname_version = software["CPE_False"]["swname:version"]
     print("update_software_json")
