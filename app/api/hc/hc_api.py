@@ -44,7 +44,7 @@ async def websocket_connect_endpoint(websocket: WebSocket, ip: str, port: int, u
 
 
 @hc.get("/swdict/")
-async def get_swdict(hostname: str, port: int, username: str, password: str, os_type: str):
+async def get_swdict(hostname: str, port: int, username: str, password: str, os_type: str, save: bool = False):
     if os_type == "debian":
         sw_list = await get_swdict_debian(hostname, port, username, password)
     elif os_type == "redhat":
@@ -112,7 +112,8 @@ async def get_swdict(hostname: str, port: int, username: str, password: str, os_
             sw_list = re_sw_list
 
     print(f"len(result): {len(result)}")
-    save_software(software)
+    if save:
+        save_software(software)
     return {"result": result}
 
 
