@@ -57,7 +57,7 @@ async def get_swdict(hostname: str, port: int, username: str, password: str, os_
     cpe_false_swname_version = software["CPE_False"]["swname:version"]
     cpe_true = software["CPE_True"]
 
-    def proccess_software(sw: dict, cpe_true: dict, cpe_false_swname: list, cpe_false_swname_version: list) -> dict:
+    async def proccess_software(sw: dict, cpe_true: dict, cpe_false_swname: list, cpe_false_swname_version: list) -> dict:
         swname = sw["swname"]
         version = sw["version"]
         swname_version = f"{swname}:{version}"
@@ -71,10 +71,10 @@ async def get_swdict(hostname: str, port: int, username: str, password: str, os_
             "key": ""
         }
         if swname_version in cpe_true:
-            result.update(search_nvd_cve(cpe_true[swname_version]))
+            result.update(await search_nvd_cve(cpe_true[swname_version]))
 
         elif swname not in cpe_false_swname and swname_version not in cpe_false_swname_version:
-            result.update(check_cpe_exist(swname, version))
+            result.update(await check_cpe_exist(swname, version))
             if result["found_cpe"] == True:
                 result.update(search_nvd_cve(result["cpe"]))
         return result
@@ -87,7 +87,7 @@ async def get_swdict(hostname: str, port: int, username: str, password: str, os_
             version = sw["version"]
             swname_version = f"{swname}:{version}"
 
-            res = proccess_software(sw, cpe_true, cpe_false_swname, cpe_false_swname_version)
+            res = await proccess_software(sw, cpe_true, cpe_false_swname, cpe_false_swname_version)
 
             if res["found_cve"] == "error" or res["found_cpe"] == "error":
                 re_sw_list.append({
@@ -121,6 +121,7 @@ async def get_swdict(hostname: str, port: int, username: str, password: str, os_
 async def update_software():
     scheduler.add_job(update_software_json, 'cron', hour=0, minute=0)
     scheduler.start()
+
 
 @hc.get("/nvds/")
 async def get_nvd(swname: str):
