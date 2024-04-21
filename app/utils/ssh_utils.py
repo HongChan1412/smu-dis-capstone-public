@@ -2,7 +2,6 @@ from typing import Dict
 from fastapi import WebSocketDisconnect, WebSocket
 import logging
 import asyncssh
-import paramiko
 
 
 logging.basicConfig(level=logging.ERROR)
@@ -75,3 +74,15 @@ async def get_swdict_redhat(hostname: str, port: int, username: str, password: s
             return software_dict
     except (asyncssh.Error, Exception) as e:
         return str(e)
+
+
+async def run_remote_script(host: str, port: int, username: str, password: str, script_path: str):
+    with open(script_path, "r") as file:
+        script_content = file.read()
+    try:
+        async with asyncssh.connect(host, port=port, username=username, password=password, known_hosts=None) as conn:
+            result = await conn.run(script_content, check=True)
+            print(result.stdout, end='')
+            return result.stdout
+    except (OSError, asyncssh.Error) as e:
+        print(f"SSH connection failed: {e}")
