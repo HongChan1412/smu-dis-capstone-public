@@ -77,7 +77,7 @@ async def get_swdict_redhat(hostname: str, port: int, username: str, password: s
 
 
 async def run_remote_script(host: str, port: int, username: str, password: str, script_path: str):
-    with open(script_path, "r") as file:
+    with open(script_path, "r", encoding="utf-8") as file:
         script_content = file.read()
     try:
         async with asyncssh.connect(host, port=port, username=username, password=password, known_hosts=None) as conn:
