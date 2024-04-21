@@ -6,9 +6,10 @@ from fastapi import WebSocket, Request, WebSocketDisconnect, APIRouter
 from fastapi.templating import Jinja2Templates
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
-from utils.ssh_utils import SSHSession, ssh_sessions, close_ssh_session, get_swdict_debian, get_swdict_redhat
+from utils.ssh_utils import SSHSession, ssh_sessions, close_ssh_session, get_swdict_debian, get_swdict_redhat, run_remote_script
 from utils.nvd_utils import check_cpe_exist, search_nvd_cve
 from utils.software_utils import load_software, save_software, update_software_json
+from config.config import SCRIPT_PATH
 
 hc = APIRouter()
 scheduler = AsyncIOScheduler()
@@ -44,7 +45,7 @@ async def websocket_connect_endpoint(websocket: WebSocket, ip: str, port: int, u
 
 
 @hc.get("/swdict/")
-async def get_swdict(hostname: str, port: int, username: str, password: str, os_type: str):
+async def get_swdict(hostname: str, port: int, username: str, password: str, os_type: str, save: bool = False):
     if os_type == "debian":
         sw_list = await get_swdict_debian(hostname, port, username, password)
     elif os_type == "redhat":
@@ -57,7 +58,7 @@ async def get_swdict(hostname: str, port: int, username: str, password: str, os_
     cpe_false_swname_version = software["CPE_False"]["swname:version"]
     cpe_true = software["CPE_True"]
 
-    def proccess_software(sw: dict, cpe_true: dict, cpe_false_swname: list, cpe_false_swname_version: list) -> dict:
+    async def proccess_software(sw: dict, cpe_true: dict, cpe_false_swname: list, cpe_false_swname_version: list) -> dict:
         swname = sw["swname"]
         version = sw["version"]
         swname_version = f"{swname}:{version}"
@@ -71,10 +72,10 @@ async def get_swdict(hostname: str, port: int, username: str, password: str, os_
             "key": ""
         }
         if swname_version in cpe_true:
-            result.update(search_nvd_cve(cpe_true[swname_version]))
+            result.update(await search_nvd_cve(cpe_true[swname_version]))
 
         elif swname not in cpe_false_swname and swname_version not in cpe_false_swname_version:
-            result.update(check_cpe_exist(swname, version))
+            result.update(await check_cpe_exist(swname, version))
             if result["found_cpe"] == True:
                 result.update(search_nvd_cve(result["cpe"]))
         return result
@@ -87,7 +88,7 @@ async def get_swdict(hostname: str, port: int, username: str, password: str, os_
             version = sw["version"]
             swname_version = f"{swname}:{version}"
 
-            res = proccess_software(sw, cpe_true, cpe_false_swname, cpe_false_swname_version)
+            res = await proccess_software(sw, cpe_true, cpe_false_swname, cpe_false_swname_version)
 
             if res["found_cve"] == "error" or res["found_cpe"] == "error":
                 re_sw_list.append({
@@ -112,7 +113,8 @@ async def get_swdict(hostname: str, port: int, username: str, password: str, os_
             sw_list = re_sw_list
 
     print(f"len(result): {len(result)}")
-    save_software(software)
+    if save:
+        save_software(software)
     return {"result": result}
 
 
@@ -121,6 +123,14 @@ async def update_software():
     scheduler.add_job(update_software_json, 'cron', hour=0, minute=0)
     scheduler.start()
 
+
 @hc.get("/nvds/")
 async def get_nvd(swname: str):
     return {"result": check_cpe_exist(swname)}
+
+
+@hc.get("/execute_script")
+async def execute_script(host: str, port: int, username: str, password: str, os_type: str, script: str):
+    script_path = SCRIPT_PATH[os_type][script]
+    result = await run_remote_script(host, port, username, password, script_path)
+    return {"result": result}
