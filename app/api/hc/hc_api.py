@@ -5,6 +5,7 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(
 from fastapi import WebSocket, Request, WebSocketDisconnect, APIRouter
 from fastapi.templating import Jinja2Templates
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+import json
 
 from utils.ssh_utils import SSHSession, ssh_sessions, close_ssh_session, get_swdict_debian, get_swdict_redhat, run_remote_script
 from utils.nvd_utils import check_cpe_exist, search_nvd_cve
@@ -80,7 +81,7 @@ async def get_swdict(hostname: str, port: int, username: str, password: str, os_
                 result.update(search_nvd_cve(result["cpe"]))
         return result
 
-    result = []
+    results = []
     while True:
         re_sw_list = []
         for sw in sw_list:
@@ -97,7 +98,28 @@ async def get_swdict(hostname: str, port: int, username: str, password: str, os_
                 })
             else:
                 if res["found_cve"] == True:
-                    result.append({swname: res["cve"]})
+                    result = {
+                        "package_name": swname,
+                        "version": version,
+                        "vulnerabilities": [],
+                    }
+                    for i in res["cve"]["vulnerabilities"]:
+                        cve = {
+                            "cve_id": i["cve"]["id"],
+                            "description": i["cve"]["descriptions"][0]["value"],
+                            "cvssMetricV31": None,
+                            "cvssMetricV30": None,
+                            "cvssMetricV2": None
+                        }
+                        if i["cve"]["metrics"].get("cvssMetricV31"):
+                            cve["cvssMetricV31"] = i['cve']['metrics']['cvssMetricV31'][0]['cvssData']['baseScore']
+                        if i["cve"]["metrics"].get("cvssMetricV30"):
+                            cve["cvssMetricV30"] = i['cve']['metrics']['cvssMetricV30'][0]['cvssData']['baseScore']
+                        if i["cve"]["metrics"].get("cvssMetricV2"):
+                            cve["cvssMetricV2"] = i['cve']['metrics']['cvssMetricV2'][0]['cvssData']['baseScore']
+                        result["vulnerabilities"].append(cve)
+                    results.append(result)
+
                 if res["found_cpe"] == True:
                     software["CPE_True"].update({swname_version: res["cpe"]})
                 elif res["found_cpe"] == False:
@@ -115,7 +137,7 @@ async def get_swdict(hostname: str, port: int, username: str, password: str, os_
     print(f"len(result): {len(result)}")
     if save:
         save_software(software)
-    return {"result": result}
+    return {"result": results}
 
 
 @hc.on_event("startup")
@@ -133,4 +155,6 @@ async def get_nvd(swname: str):
 async def execute_script(host: str, port: int, username: str, password: str, os_type: str, script: str):
     script_path = SCRIPT_PATH[os_type][script]
     result = await run_remote_script(host, port, username, password, script_path)
-    return {"result": result}
+    if script == "check":
+        result = json.loads(result)
+    return result
