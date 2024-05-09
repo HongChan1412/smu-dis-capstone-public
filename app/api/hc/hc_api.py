@@ -7,9 +7,10 @@ from fastapi.templating import Jinja2Templates
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import json
 
-from utils.ssh_utils import SSHSession, ssh_sessions, close_ssh_session, get_swdict_debian, get_swdict_redhat, run_remote_script
+from utils.ssh_utils import SSHSession, ssh_sessions, close_ssh_session, get_swdict_debian, get_swdict_redhat, run_remote_script, get_docker_image
 from utils.nvd_utils import check_cpe_exist, search_nvd_cve
 from utils.software_utils import load_software, save_software, update_software_json
+from utils.trivy_utils import check_docker
 from config.config import SCRIPT_PATH
 
 hc = APIRouter()
@@ -163,3 +164,13 @@ async def execute_script(host: str, port: int, username: str, password: str, os_
             if any("취약" in result for result in content["result"])
         ]
     return result
+
+
+@hc.get("/dockers")
+async def get_docker(host: str, port: int, username: str, password: str):
+    images = await get_docker_image(host=host, port=port, username=username, password=password)
+    images = list(filter(None, images))
+    print(images)
+    if images:
+        result = await check_docker(images)
+        return result
