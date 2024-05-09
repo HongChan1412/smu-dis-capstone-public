@@ -16,4 +16,4 @@ services:
           - service_app
     volumes:
       - ./app:/app
-      - /user/bin/trivy:usr/bin/trivy
+      - /usr/bin/trivy:/usr/bin/trivy
