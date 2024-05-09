@@ -7,9 +7,10 @@ from fastapi.templating import Jinja2Templates
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import json
 
-from utils.ssh_utils import SSHSession, ssh_sessions, close_ssh_session, get_swdict_debian, get_swdict_redhat, run_remote_script
+from utils.ssh_utils import SSHSession, ssh_sessions, close_ssh_session, get_swdict_debian, get_swdict_redhat, run_remote_script, get_docker_image
 from utils.nvd_utils import check_cpe_exist, search_nvd_cve
 from utils.software_utils import load_software, save_software, update_software_json
+from utils.trivy_utils import check_docker
 from config.config import SCRIPT_PATH
 
 hc = APIRouter()
@@ -82,57 +83,54 @@ async def get_swdict(hostname: str, port: int, username: str, password: str, os_
         return result
 
     results = []
-    while True:
-        re_sw_list = []
-        for sw in sw_list:
-            swname = sw["swname"]
-            version = sw["version"]
-            swname_version = f"{swname}:{version}"
+    re_sw_list = []
+    for sw in sw_list:
+        swname = sw["swname"]
+        version = sw["version"]
+        swname_version = f"{swname}:{version}"
 
-            res = await proccess_software(sw, cpe_true, cpe_false_swname, cpe_false_swname_version)
+        res = await proccess_software(sw, cpe_true, cpe_false_swname, cpe_false_swname_version)
 
-            if res["found_cve"] == "error" or res["found_cpe"] == "error":
-                re_sw_list.append({
-                    "swname": swname,
-                    "version": version
-                })
-            else:
-                if res["found_cve"] == True:
-                    result = {
-                        "package_name": swname,
-                        "version": version,
-                        "vulnerabilities": [],
-                    }
-                    for i in res["cve"]["vulnerabilities"]:
-                        cve = {
-                            "cve_id": i["cve"]["id"],
-                            "description": i["cve"]["descriptions"][0]["value"],
-                            "cvssMetricV31": None,
-                            "cvssMetricV30": None,
-                            "cvssMetricV2": None
-                        }
-                        if i["cve"]["metrics"].get("cvssMetricV31"):
-                            cve["cvssMetricV31"] = i['cve']['metrics']['cvssMetricV31'][0]['cvssData']['baseScore']
-                        if i["cve"]["metrics"].get("cvssMetricV30"):
-                            cve["cvssMetricV30"] = i['cve']['metrics']['cvssMetricV30'][0]['cvssData']['baseScore']
-                        if i["cve"]["metrics"].get("cvssMetricV2"):
-                            cve["cvssMetricV2"] = i['cve']['metrics']['cvssMetricV2'][0]['cvssData']['baseScore']
-                        result["vulnerabilities"].append(cve)
-                    results.append(result)
-
-                if res["found_cpe"] == True:
-                    software["CPE_True"].update({swname_version: res["cpe"]})
-                elif res["found_cpe"] == False:
-                    if res["key"] == "swname":
-                        software["CPE_False"]["swname"].append(swname)
-                    elif res["key"] == "swname:version":
-                        software["CPE_False"]["swname:version"].append(swname_version)
-
-        if not re_sw_list:
-            break
+        if res["found_cve"] == "error" or res["found_cpe"] == "error":
+            re_sw_list.append({
+                "swname": swname,
+                "version": version
+            })
         else:
-            print(f"re_sw_list: {re_sw_list}")
-            sw_list = re_sw_list
+            if res["found_cve"] == True:
+                result = {
+                    "package_name": swname,
+                    "version": version,
+                    "vulnerabilities": [],
+                }
+                for i in res["cve"]["vulnerabilities"]:
+                    cve = {
+                        "cve_id": i["cve"]["id"],
+                        "description": i["cve"]["descriptions"][0]["value"],
+                        "cvssMetricV31": None,
+                        "cvssMetricV30": None,
+                        "cvssMetricV2": None
+                    }
+                    if i["cve"]["metrics"].get("cvssMetricV31"):
+                        cve["cvssMetricV31"] = i['cve']['metrics']['cvssMetricV31'][0]['cvssData']['baseScore']
+                    if i["cve"]["metrics"].get("cvssMetricV30"):
+                        cve["cvssMetricV30"] = i['cve']['metrics']['cvssMetricV30'][0]['cvssData']['baseScore']
+                    if i["cve"]["metrics"].get("cvssMetricV2"):
+                        cve["cvssMetricV2"] = i['cve']['metrics']['cvssMetricV2'][0]['cvssData']['baseScore']
+                    result["vulnerabilities"].append(cve)
+                results.append(result)
+
+            if res["found_cpe"] == True:
+                software["CPE_True"].update({swname_version: res["cpe"]})
+            elif res["found_cpe"] == False:
+                if res["key"] == "swname":
+                    software["CPE_False"]["swname"].append(swname)
+                elif res["key"] == "swname:version":
+                    software["CPE_False"]["swname:version"].append(swname_version)
+
+    else:
+        print(f"re_sw_list: {re_sw_list}")
+        sw_list = re_sw_list
 
     print(f"len(result): {len(result)}")
     if save:
@@ -163,3 +161,13 @@ async def execute_script(host: str, port: int, username: str, password: str, os_
             if any("취약" in result for result in content["result"])
         ]
     return result
+
+
+@hc.get("/dockers")
+async def get_docker(host: str, port: int, username: str, password: str):
+    images = await get_docker_image(host=host, port=port, username=username, password=password)
+    images = list(filter(None, images))
+    print(images)
+    if images:
+        result = await check_docker(images)
+        return result
