@@ -167,15 +167,31 @@ async def get_docker(host: str, port: int, username: str, password: str):
     images = await get_docker_image(host=host, port=port, username=username, password=password)
     images = list(filter(None, images))
     results = {
-        "dockerImage": {
-        }
+        "dockerImage": [
+        ]
     }
     for image in images:
-        cve_json = await check_docker(image)
-        if cve_json:
-            cve_re_json = await create_dockerfile(image)
-            if cve_re_json:
-                return cve_re_json
+        print(image)
+        if image == "python:3.7.8":
+            cve_json = await check_docker(image)
+            if cve_json:
+                cve_re_json = await create_dockerfile(image)
+                if cve_re_json:
+                    result = {
+                        "ImageName": cve_re_json["ArtifactName"],
+                        "before": len(cve_json["Results"][0]["Vulnerabilities"]),
+                        "after": len(cve_re_json["Results"][0]["Vulnerabilities"]),
+                        "leftcve": []
+                    }
+                    for i in range(len(cve_re_json["Results"][0]["Vulnerabilities"])):
+                        data = {
+                            "Libarary Name": cve_re_json["Results"][0]["Vulnerabilities"][i]["PkgName"],
+                            "CVE": cve_re_json["Results"][0]["Vulnerabilities"][i]["VulnerabilityID"],
+                            "Severity": cve_re_json["Results"][0]["Vulnerabilities"][i]["Severity"]
+                        }
+                        result["leftcve"].append(data)
+                    results.append(result)
+    return results
                 # num = len(cve_json["Results"][0]["Vulnerabilities"])
                 # results["dockerImage"][image] = {
                 #     "ImageName": cve_json["ArtifactName"],
