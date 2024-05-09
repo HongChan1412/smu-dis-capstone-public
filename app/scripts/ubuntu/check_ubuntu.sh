@@ -72,8 +72,7 @@ echo },
 echo {
 echo \"subtitle\": \"04. 패스워드 파일 보호\",
 echo \"result\": [
-if [ "`cat /etc/passwd | grep "root" | awk -F: '{print $2}' | sed -n '1p'`" = x ]
-	then
+if [[ $(awk -F: '/^root/ {print $2}' /etc/passwd) =~ ^\$6\$ ]]; 	then
 	  if test -r /etc/shadow
 	    then
 	      echo \"[안전] Shadow 패스워드 시스템을 사용중입니다\"
@@ -182,6 +181,13 @@ echo \"[수동조치권장] 04-01 항목 참고\"
 echo ]
 echo },
 END
+
+echo {
+echo \"subtitle\": \"07. /etc/passwd 파일 소유자 및 권한 설정\",
+echo \"result\": [
+echo \"[수동조치권장] 04-01 항목 참고\"
+echo ]
+echo },
 
 echo {
 echo \"subtitle\": \"08. /etc/shadow 파일 소유자 및 권한 설정\",
@@ -752,7 +758,7 @@ echo \"result\": [
 echo \"Primary Name Server에는 Zone Transfer를 허용하는 서버를 지정\",
 echo \"Secondary Server 에는 Zone Transfer를 허용하지 않아야 함\",
 echo \"[수동조치권장] DNS Zone Transfer를 허가된 사용자에게만 허용해야 함\",
-echo \"DNS Zone Transfer를 모든 사용자에게 허용했을 경우 [취약] 하다고 판단\"
+echo \"DNS Zone Transfer를 모든 사용자에게 허용했을 경우 취약 하다고 판단\"
 echo ]
 echo },
 
