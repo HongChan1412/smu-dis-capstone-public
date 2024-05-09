@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.cors import CORSMiddleware
+
 
 from api.hb.hb_api import hb
 from api.hc.hc_api import hc
@@ -13,3 +15,10 @@ app.include_router(hc, prefix="/hc")
 app.include_router(hb, prefix="/hb")
 app.include_router(hs, prefix="/hs")
 app.include_router(yj, prefix="/yj")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
