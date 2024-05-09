@@ -47,9 +47,9 @@ async def websocket_connect_endpoint(websocket: WebSocket, ip: str, port: int, u
 
 @hc.get("/swdict/")
 async def get_swdict(hostname: str, port: int, username: str, password: str, os_type: str, save: bool = False):
-    if os_type == "debian":
+    if os_type == "ubuntu":
         sw_list = await get_swdict_debian(hostname, port, username, password)
-    elif os_type == "redhat":
+    elif os_type == "centos":
         sw_list = await get_swdict_redhat(hostname, port, username, password)
     else:
         return {"error": "Unsupported OS type"}
@@ -157,4 +157,9 @@ async def execute_script(host: str, port: int, username: str, password: str, os_
     result = await run_remote_script(host, port, username, password, script_path)
     if script == "check":
         result = json.loads(result)
+        result["foot"] = [content["subtitle"]
+            for section in result["body"]
+            for content in section["content"]
+            if any("취약" in result for result in content["result"])
+        ]
     return result
