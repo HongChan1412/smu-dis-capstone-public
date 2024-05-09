@@ -132,7 +132,6 @@ async def get_swdict(hostname: str, port: int, username: str, password: str, os_
         print(f"re_sw_list: {re_sw_list}")
         sw_list = re_sw_list
 
-    print(f"len(result): {len(result)}")
     if save:
         save_software(software)
     return {"result": results}
