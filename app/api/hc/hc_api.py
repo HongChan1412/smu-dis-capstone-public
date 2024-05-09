@@ -10,7 +10,7 @@ import json
 from utils.ssh_utils import SSHSession, ssh_sessions, close_ssh_session, get_swdict_debian, get_swdict_redhat, run_remote_script, get_docker_image
 from utils.nvd_utils import check_cpe_exist, search_nvd_cve
 from utils.software_utils import load_software, save_software, update_software_json
-from utils.trivy_utils import check_docker
+from utils.trivy_utils import check_docker, create_dockerfile
 from config.config import SCRIPT_PATH
 
 hc = APIRouter()
@@ -167,7 +167,21 @@ async def execute_script(host: str, port: int, username: str, password: str, os_
 async def get_docker(host: str, port: int, username: str, password: str):
     images = await get_docker_image(host=host, port=port, username=username, password=password)
     images = list(filter(None, images))
-    print(images)
-    if images:
-        result = await check_docker(images)
-        return result
+    results = {
+        "dockerImage": {
+        }
+    }
+    for image in images:
+        cve_json = await check_docker(image)
+        if cve_json:
+            cve_re_json = await create_dockerfile(image)
+            if cve_re_json:
+                return cve_re_json
+                # num = len(cve_json["Results"][0]["Vulnerabilities"])
+                # results["dockerImage"][image] = {
+                #     "ImageName": cve_json["ArtifactName"],
+                #     "before": num,
+                #     "after": num,
+                #     "leftcve": []
+                # }
+                # return cve_re_json
