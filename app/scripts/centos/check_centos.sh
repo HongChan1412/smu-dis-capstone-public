@@ -398,7 +398,7 @@ echo \"서버 환경마다 파일들이 다르기 때문에 이를 스크립트�
 echo \"따라서 수동적인 체크가 필요\",
 echo \"[수동조치권장] 체크 후, 해당 파일이 root와 소유자만이 w 권한이 있도록 설정\",
 echo \"수동적인 체크\(홈 디렉터리 환경변수 파일의 소유자 및 권한 확인\) 후\",
-echo \"해당 파일이  root와 소유자 이외에도 w 권한이 있다면 [취약]하다고 판단할 수 있음\"
+echo \"해당 파일이  root와 소유자 이외에도 w 권한이 있다면 취약 하다고 판단할 수 있음\"
 echo ]
 echo },
 
@@ -411,7 +411,7 @@ echo \"[수동조치권장] 생성된 15-1.World_Writable.txt 및 보고서 파�
 echo \"이 또한 서버 환경마다 다르기 때문에 수동적인 체크가 필요함\",
 echo \"다만 기본적으로 시스템에 설치되는 world writable 파일 자체가 상당히 많기 때문에,\",
 echo \"15-1.World_Writable.txt 목록\(혹시 모를 악의적인 파일 포함\)과 기본적으로 생성되는 world writable 파일 간의 비교가 필요함\",
-echo \"시스템 중요 파일에 world writable 파일이 존재하나 해당 설정 이유를 확인하고 있지 않는 경우 [취약]으로 판단\"
+echo \"시스템 중요 파일에 world writable 파일이 존재하나 해당 설정 이유를 확인하고 있지 않는 경우 취약 으로 판단\"
 echo ]
 echo },
 
@@ -675,8 +675,8 @@ echo \"다음과 같은 서비스를 제한 \단, 플랫폼에 따라 서비스 
 echo \"{sadmin, rpc.*, rquotad, shell. login. exec, talk, time, discard, chargen}\",
 echo \"{printer, uucp, echo, daytime, dtscpt, finger}\",
 echo \"[수동조치권장] 위의 서비스들을 중지하거나, 최신 버전의 패치 적용\",
-echo \"위의 서비스들을 중지하거나, 최신 버전의 패치를 적용했을 경우 [안전] 하다고 판단\",
-echo \"위의 서비스들을 사용하거나, 최신 버전의 패치를 적용하지 않았을 경우 [취약] 하다고 판단\",
+echo \"위의 서비스들을 중지하거나, 최신 버전의 패치를 적용했을 경우 안전 하다고 판단\",
+echo \"위의 서비스들을 사용하거나, 최신 버전의 패치를 적용하지 않았을 경우 취약 하다고 판단\",
 services="sadmin rpc rquotad shell login exec talk time discard chargen printer uucp echo daytime dtscpt finger"
 safe=1
 if [ -f /etc/inetd.conf ]; then
@@ -711,8 +711,8 @@ echo \"subtitle\": \"28. NIS, NIS+ 점검\",
 echo \"result\": [
 echo \"관리자의 수동적인 점검이 필요함\",
 echo \"[수동조치권장] NIS 보다 데이터 인증이 강화된 NIS+ 사용\",
-echo \"점검 후  NIS 보다 데이터 인증이 강화된 NIS+ 사용한다면 [안전] 하다고 판단\",
-echo \"점검 후 기본적인 NIS를 사용한다면 [취약] 하다고 판단\",
+echo \"점검 후  NIS 보다 데이터 인증이 강화된 NIS+ 사용한다면 안전 하다고 판단\",
+echo \"점검 후 기본적인 NIS를 사용한다면 취약 하다고 판단\",
 nis_status=$(systemctl is-active ypserv)
 if [ "$nis_status" = "active" ]; then
   echo \"[취약] NIS 서비스가 활성화되어 있습니다.\",
@@ -820,7 +820,7 @@ echo \"result\": [
 echo \"Primary Name Server에는 Zone Transfer를 허용하는 서버를 지정\",
 echo \"Secondary Server 에는 Zone Transfer를 허용하지 않아야 함\",
 echo \"[수동조치권장] DNS Zone Transfer를 허가된 사용자에게만 허용해야 함\",
-echo \"DNS Zone Transfer를 모든 사용자에게 허용했을 경우 [취약] 하다고 판단\"
+echo \"DNS Zone Transfer를 모든 사용자에게 허용했을 경우 취약 하다고 판단\"
 echo ]
 echo },
 
