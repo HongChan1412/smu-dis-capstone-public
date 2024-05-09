@@ -17,4 +17,3 @@ services:
     volumes:
       - ./app:/app
       - /usr/bin/trivy:/usr/bin/trivy
-      - /var/run/docker.sock:/var/run/docker.sock
