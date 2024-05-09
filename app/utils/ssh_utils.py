@@ -76,6 +76,18 @@ async def get_swdict_redhat(hostname: str, port: int, username: str, password: s
         return str(e)
 
 
+async def get_docker_image(host: str, port: int, username: str, password: str):
+    command = "docker images --format \"{{.Repository}}:{{.Tag}}\""
+    try:
+        async with asyncssh.connect(host, port=port, username=username, password=password, known_hosts=None) as conn:
+            result = await conn.run(command, check=True)
+            result = result.stdout.strip().split("\n")
+
+            return result
+    except (asyncssh.Error, Exception) as e:
+        return str(e)
+
+
 async def run_remote_script(host: str, port: int, username: str, password: str, script_path: str):
     with open(script_path, "r", encoding="utf-8") as file:
         script_content = file.read()
