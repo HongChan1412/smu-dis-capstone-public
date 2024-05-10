@@ -13,4 +13,7 @@ RUN apt-get update && \
     apt-get update && \
     apt-get -y install docker-ce docker-ce-cli containerd.io
 
+COPY ./app/scripts/docker-login.sh /usr/local/bin/docker-login.sh
+RUN chmod +x /usr/local/bin/docker-login.sh
+
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
