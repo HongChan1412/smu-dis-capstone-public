@@ -4,6 +4,7 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(
 
 from fastapi import WebSocket, Request, WebSocketDisconnect, APIRouter
 from fastapi.templating import Jinja2Templates
+from fastapi.responses import FileResponse
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import json
 
@@ -192,3 +193,9 @@ async def get_docker(host: str, port: int, username: str, password: str):
                 results["dockerImage"][image] = result
     prune_docker()
     return results
+
+
+@hc.get("/tars")
+async def download_tar(image: str):
+    file_path = f"/app/tar_list/{image}.tar"
+    return FileResponse(path=file_path, filename=f"{image}.tar", media_type="application/x-tar")
