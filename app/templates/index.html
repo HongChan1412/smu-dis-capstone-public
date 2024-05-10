@@ -4,7 +4,7 @@
     <head>
         <title>서버 보안 가이드라인에 따른 점검 및 보고서 생성 시스템</title>
         <link rel="stylesheet" type="text/css" href="/static/css/index.css">
-        <script src="/static/js/javascript.js"></script>
+        <script src="/static/js/script.js"></script>
     </head>
     
     <body>
@@ -47,8 +47,7 @@
                                 </tbody>   
                             </table>
                             <div style=" margin-left: 110px;">
-                                <button id="connect" onclick="connect()">Connect</button>
-                                <button id="disconnect" onclick="disconnect()" disabled>Disconnect</button>
+                                <button id="connect">Connect</button>
                             </div>
                     </div>
                     <div class="join-wrapper">
@@ -81,6 +80,22 @@
         <b class="subj"> 1조 내일봬요누나 </b>         
     </div>
     <script>
+        document.getElementById("connect").addEventListener("click", function() {
+            // 입력 필드로부터 값을 가져옵니다.
+            var ip = document.getElementById("ip").value;
+            var port = document.getElementById("port").value;
+            var user = document.getElementById("user").value;
+            var password = document.getElementById("passwd").value;
+            
+            // 로컬 스토리지에 값을 저장합니다.
+            localStorage.setItem("ip", ip);
+            localStorage.setItem("port", port);
+            localStorage.setItem("user", user);
+            localStorage.setItem("password", password);
+            
+            // 저장 완료 알림을 표시합니다. (선택적)
+            alert("서버 정보가 입력되었습니다.");
+        });
         document.getElementById("checkButton").addEventListener("click", function() {
             var ubuntuCheckbox = document.getElementById("option1");
             var centOSCheckbox = document.getElementById("option2");
