@@ -29,6 +29,10 @@
                             <table>
                                 <tbody>
                                     <tr>
+                                        <th> Company </th>
+                                        <th> <input id="company" type="text" placeholder="name"> </th>
+                                    </tr>
+                                    <tr>
                                         <th> IP </th>
                                         <th> <input id="ip" type="text" placeholder="0.0.0.0"> </th>
                                     </tr>
@@ -44,7 +48,7 @@
                                         <th> Password </th>
                                         <th> <input id="passwd" type="password" value="guest1412"> </th>
                                     </tr>
-                                </tbody>   
+                                </tbody> 
                             </table>
                             <div style=" margin-left: 110px;">
                                 <button id="connect">Connect</button>
@@ -82,16 +86,24 @@
     <script>
         document.getElementById("connect").addEventListener("click", function() {
             // 입력 필드로부터 값을 가져옵니다.
+            var name = document.getElementById("company").value;
             var ip = document.getElementById("ip").value;
             var port = document.getElementById("port").value;
             var user = document.getElementById("user").value;
             var password = document.getElementById("passwd").value;
             
-            // 로컬 스토리지에 값을 저장합니다.
-            localStorage.setItem("targetIp", ip);
-            localStorage.setItem("targetPort", port);
-            localStorage.setItem("targetUser", user);
-            localStorage.setItem("targetPasswd", password);
+            var encodedName = encodeURIComponent(name);
+            var encodedIp = encodeURIComponent(ip);
+            var encodedPort = encodeURIComponent(port);
+            var encodedUser = encodeURIComponent(user);
+            var encodedPassword = encodeURIComponent(password);
+
+            // 로컬 스토리지에 인코딩된 값을 저장합니다.
+            localStorage.setItem("targetCompany", encodedName);
+            localStorage.setItem("targetIp", encodedIp);
+            localStorage.setItem("targetPort", encodedPort);
+            localStorage.setItem("targetUser", encodedUser);
+            localStorage.setItem("targetPasswd", encodedPassword);
             
             // 저장 완료 알림을 표시합니다. (선택적)
             alert("서버 정보가 입력되었습니다.");
@@ -100,13 +112,15 @@
             var ubuntuCheckbox = document.getElementById("option1");
             var centOSCheckbox = document.getElementById("option2");
             var resultText = document.getElementById("result");
-        
+
             if (ubuntuCheckbox.checked && centOSCheckbox.checked) {
                 resultText.textContent = "하나의 운영체제만 선택해주세요.";
             } else if (ubuntuCheckbox.checked) {
-                window.location.href = "ubuntu"; // Ubuntu가 선택된 경우 이동할 페이지
+                localStorage.setItem('selectedOS', 'Ubuntu-18.04'); // Ubuntu 선택 저장
+                window.location.href = "ubuntu"; // Ubuntu 페이지로 이동
             } else if (centOSCheckbox.checked) {
-                window.location.href = "centos"; // CentOS가 선택된 경우 이동할 페이지
+                localStorage.setItem('selectedOS', 'CentOS-7.9'); // CentOS 선택 저장
+                window.location.href = "centos"; // CentOS 페이지로 이동
             } else {
                 resultText.textContent = "운영체제를 선택해주세요.";
             }

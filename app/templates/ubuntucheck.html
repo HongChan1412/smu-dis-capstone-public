@@ -130,7 +130,7 @@
 
                     if (footContent && footContent.length > 0) {
                         const footTitle = document.createElement('h2');
-                        footTitle.textContent = '<[취약]이 나온 항목>';
+                        footTitle.textContent = '[취약] 항목';
                         footTitle.style.color = 'red';
                         document.body.appendChild(footTitle);
 
@@ -141,22 +141,28 @@
                             footList.appendChild(listItem);
                         });
                         document.body.appendChild(footList);
-                        // footContent 배열을 문자열로 변환
                         localStorage.setItem('footContent', JSON.stringify(footContent));
                     }
                     document.body.appendChild(document.createElement('hr'));
 
                     const tableTitle = document.createElement('h2'); 
-                    tableTitle.textContent = '<조치가 가능한 항목>';
-                    tableTitle.style.color = 'red';
+                    tableTitle.textContent = '💡조치가 가능한 항목💡';
+                    tableTitle.style.color = '#353535';
+                    tableTitle.style.marginTop = "20px";
                     document.body.appendChild(tableTitle);
 
                     const table = document.createElement('table');
-                    table.style.width = '100%';
-                    table.setAttribute('border', '1');
+                    table.style.width = '1200px';
+                    table.style.height = "60px"
+                    table.style.fontSize="15px";
+                    table.style.backgroundColor="#353535"
+                    table.cellSpacing = '0';
+                    table.style.borderCollapse = 'collapse';
+                
                     const thead = document.createElement('thead');
                     const headerRow = document.createElement('tr');
                     const firstHeader = document.createElement('th');
+                    
                     firstHeader.textContent = '항목';
                     headerRow.appendChild(firstHeader);
                     const headers = ['1번', '3번', '4번', '5번', '9번', '10번', '11번', '12번', '20번', '22번', '29번', '32번', '35번', '37번', '39번', '40번', '41번'];
@@ -197,13 +203,19 @@
                     headers.forEach(headerText => {
                         const checkboxCell = document.createElement('td');
                         const checkbox = document.createElement('input');
+
                         checkbox.type = 'checkbox';
                         checkbox.checked = true;
                         checkbox.value = scriptPaths[headerText]; // 체크박스에 스크립트 경로를 값으로 저장
+                        checkbox.style.width="20px"
+                        checkbox.style.height="20px"
                         checkboxCell.appendChild(checkbox);
                         bodyRow.appendChild(checkboxCell);
                     });
+
                     tbody.appendChild(bodyRow);
+                    tbody.style.backgroundColor="white";
+                    tbody.style.textAlign="center";
                     table.appendChild(tbody);
                     document.body.appendChild(table);
 
@@ -221,6 +233,7 @@
                         localStorage.setItem('checkedItems', checkedScripts);
 
                         let resultElement = document.querySelector('#checkedResult');
+                        
                         if (!resultElement) {
                             resultElement = document.createElement("p");
                             resultElement.id = 'checkedResult'; 
@@ -228,6 +241,9 @@
                         }
                         resultElement.textContent = `Check Number: ${checkedScripts}`;
                         resultElement.style.whiteSpace = "nowrap";
+                        resultElement.style.marginLeft = "150px";
+                        resultElement.style.fontSize="17px";
+                        resultElement.style.fontWeight="700";
                     }
 
                     document.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
@@ -240,7 +256,12 @@
                     startActionButton.textContent = '조치 시작';
                     startActionButton.style.marginTop = '30px';
                     startActionButton.style.marginBottom = '30px';
-                    
+                    startActionButton.style.marginLeft = '46%';
+                    startActionButton.style.width="130px";
+                    startActionButton.style.height="40px";
+                    startActionButton.style.fontSize="15px";
+                    startActionButton.style.backgroundColor="#78befc";
+                    startActionButton.style.borderColor = "#78befc";
                     startActionButton.addEventListener('click', function() {
                         showLoading();
                         const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');

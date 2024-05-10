@@ -27,21 +27,30 @@ hr{
 }
 
 #docker_table {
-    width: 50%;
+    width: 80%;  
     margin: auto;
     table-layout: fixed;
     border-collapse: collapse;
 }
+
 #docker_table th, #docker_table td {
-    border: 1px solid black;
+    border: 1px solid rgb(4, 4, 4);
     text-align: center;
+    padding: 8px; /* 셀 안의 내용과 테두리 사이의 여백을 추가합니다. */
 }
+
 #docker_table th:first-child, #docker_table td:first-child {
-    width: 15%; /* "No." 칸의 너비를 줄입니다. */
+    width: 10%; /* "No." 칸의 너비를 조정합니다. */
 }
+
 #docker_table th:nth-child(2), #docker_table td:nth-child(2) {
-    width: 90%; /* 이미지 이름 칸의 너비를 늘립니다. */
+    width: 35%; /* 이미지 이름 칸의 너비를 조정합니다. */
 }
+
+#docker_table th:nth-child(3), #docker_table td:nth-child(3) {
+    width: 35%; /* 추가된 "Action" 칸의 너비를 조정합니다. */
+}
+
 
 
 .toggle-button{
