@@ -88,10 +88,10 @@
             var password = document.getElementById("passwd").value;
             
             // 로컬 스토리지에 값을 저장합니다.
-            localStorage.setItem("ip", ip);
-            localStorage.setItem("port", port);
-            localStorage.setItem("user", user);
-            localStorage.setItem("password", password);
+            localStorage.setItem("targetIp", ip);
+            localStorage.setItem("targetPort", port);
+            localStorage.setItem("targetUser", user);
+            localStorage.setItem("targetPasswd", password);
             
             // 저장 완료 알림을 표시합니다. (선택적)
             alert("서버 정보가 입력되었습니다.");
