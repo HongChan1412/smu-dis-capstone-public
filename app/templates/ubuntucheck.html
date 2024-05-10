@@ -44,7 +44,7 @@
                     const encodedPasswd = encodeURIComponent(targetPasswd);
 
                     // URL 조합
-                    const baseUrl = "http://localhost:8000/hc/execute_script"; 
+                    const baseUrl = "http://49.50.166.249:8000/hc/execute_script"; 
                     const queryParams = `?host=${targetIp}&port=${targetPort}&username=${targetUser}&password=${targetPasswd}&os_type=ubuntu&script=check`;
                     const fullUrl = baseUrl + queryParams;
                     console.log("요청된 URL: ", fullUrl);
@@ -259,7 +259,7 @@
                         checkboxes.forEach((checkbox) => {
                             if (checkbox.checked) {
                                 const script = checkbox.value;
-                                const baseUrl = "http://localhost:8000/hc/execute_script";
+                                const baseUrl = "http://49.50.166.249:8000/hc/execute_script";
                                 const queryParams = `?host=${targetIp}&port=${targetPort}&username=${targetUser}&password=${targetPasswd}&os_type=ubuntu&script=${script}`;
                                 const fullUrl = baseUrl + queryParams;
 
