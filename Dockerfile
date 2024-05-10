@@ -16,4 +16,4 @@ RUN apt-get update && \
 COPY ./app/scripts/docker-login.sh /usr/local/bin/docker-login.sh
 RUN chmod +x /usr/local/bin/docker-login.sh
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["/bin/bash", "-c", "/usr/local/bin/docker-login.sh && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"]
