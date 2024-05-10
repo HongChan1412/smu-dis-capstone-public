@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Ubuntu 도커 이미지</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/scriptstyle.css">
+    <script src="/static/js/script.js"></script>
+</head>
+<div style=" margin-left: 5%; margin-top: 3%;">
+    <b class="title">서버, 서비스 점검 및 조치 자동화 시스템</b></br>
+    <b>해당 시스템은 서버 보안 가이드라인 기반의 서버 점검 및 조치와 서버 내 시스템 점검으로 진행됩니다.</b>
+</div>
+<br>
+<body>
+    <div style="text-align: center;">
+        <h1>☑️ 취약한 DockerImage 점검☑️</h1>
+        <hr>
+    </div>
+    <br>
+    <br>
+    <div style="text-align: center;"><h5>~설명~</h5></div>
+    <div id="tableContainer"></div>
+    <div id="buttonContainer" style="text-align:center; margin-top:20px;">
+    </div>
+    <script>
+        function createDockerTableFromJson(jsonData){
+                fetch('cve_result')
+                .then(response => response.json()) 
+                .then(data => {
+                    let table = document.createElement('table'); 
+                    table.style.width = '50%'; 
+                    table.style.margin = 'auto'; 
+                    table.style.tableLayout = 'fixed';
+                    table.id = 'docker_table';
+                    
+                    let headerRow = table.insertRow(-1);
+                    let headerCell1 = document.createElement('th');
+                    headerCell1.textContent = 'No.';
+                    let headerCell2 = document.createElement('th');
+                    headerCell2.textContent = 'ImageName';
+                    headerRow.appendChild(headerCell1);
+                    headerRow.appendChild(headerCell2);
+                    
+                    let count = 1; 
+                    for (let imageName in data.dockerImage) {
+                        if (data.dockerImage.hasOwnProperty(imageName)) {
+                            let row = table.insertRow(-1); 
+                            let cell1 = row.insertCell(0); 
+                            let cell2 = row.insertCell(1); 
+                            cell1.textContent = count++; 
+                            cell2.textContent = data.dockerImage[imageName].ImageName;
+                        }
+                    }
+                    document.getElementById('tableContainer').appendChild(table);
+                })
+                .catch(error => console.error('Error loading the JSON file:', error));
+                document.body.appendChild(document.createElement('br'));
+                document.body.appendChild(document.createElement('br'));
+            }
+
+            function createlastButton() {
+                const button = document.createElement('button');
+                button.id = 'reportButton'; 
+                button.textContent = '최종 전체 결과 보고서';
+                button.style.margin = 'auto'; 
+                button.style.display = 'block';
+
+                button.addEventListener('click', function() {
+                    window.location.href = '/hs/report'; 
+                });
+                document.getElementById('buttonContainer').appendChild(button);
+                document.body.appendChild(document.createElement('br'));
+                document.body.appendChild(document.createElement('br'));
+                document.body.appendChild(document.createElement('br'));
+            }
+
+            window.onload = function() {
+                createDockerTableFromJson();
+                createlastButton();
+            };
+    </script>
+</body>
+</html>
+

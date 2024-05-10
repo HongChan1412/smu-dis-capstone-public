@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>결과보고서</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.2/html2canvas.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+        <style>
+            /* 페이지 전체를 가운데 정렬 */
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+                width: 100%;
+            }
+            /* convert-to-convert 영역을 가운데 정렬 */
+            #convert-to-convert {
+                text-align: center; /* 내용을 중앙으로 정렬 */
+                width: 90%; /* 브라우저 창에 맞춰 너비 설정 */
+                margin: 0 auto; /* 위, 아래 마진은 0, 좌, 우는 자동으로 가운데 정렬 */
+            }
+            #buttonContainer{
+                margin: 20px auto;
+            }
+            #server_weakness, #server_info, #package_diff, #docker_info, #outer_pkgtable, #outer_docker{
+                table-layout: fixed; /* 고정된 테이블 레이아웃 사용 */
+                width: 100%; /* 테이블의 전체 너비를 100%로 설정 */
+                border-collapse: collapse; /* 테두리 분리 없이 하나로 합침 */
+            }
+            #new_table, #docker_table{
+                table-layout: fixed;
+                width:80%;
+                border-collapse: collapse;
+            }
+
+            #server_weakness td, #package_diff th, #server_info td ,#new_table td, #docker_info td, #outer_pkgtable td,#outer_docker td, #docker_table td{
+                width: 25%; /* 모든 셀(td와 th)의 너비를 테이블 너비의 25%로 설정 */
+                text-align: left; /* 텍스트 왼쪽 정렬 */
+                vertical-align: top; /* 셀의 내용을 위쪽에 정렬 */
+                border: 1px solid black; /* 테두리 설정 */
+            }
+            #server_weakness th, #package_diff td, #new_table td, #docker_info td, #new_table th ,#docker_table th{
+                text-align: center; /* 제목 셀의 텍스트 중앙 정렬 */
+            }
+
+            td, th{
+                padding: 5px;
+            }
+            table {
+                margin: 0 auto; /* 표를 가운데 정렬 */
+            }
+        </style>
+    </head>
+
+    <body style="font-size: 13px;">
+        <div id="convert-to-convert">
+            <h3 style="text-align:center;">점검 및 조치 결과보고서</h3>
+            <div id="current_date" style="text-align: left;">
+                <script>
+                    date = new Date();
+                    year = date.getFullYear();
+                    month = date.getMonth() +1;
+                    day = date.getDate();
+                    document.getElementById("current_date").innerHTML = "날짜: " + year+ "/"  +month + "/" + day;
+                </script>
+                <br>
+            </div>
+            <div id="table">
+                <table id="server_info" border="1">
+                        <tr>
+                            <td style="text-align: center;">회사이름</td>
+                            <td></td>
+                            <td style="text-align: center;">작성자</td>
+                            <td>내봬누팀</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">IP</td>
+                            <td id="targetIpTd"></td>
+                            <td style="text-align: center;">서버버전정보</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">서버점검날짜</td>
+                            <td id="currentTimeTd"></td>
+                            <td style="text-align: center;">비고</td>
+                            <td></td>
+                        </tr>                        
+                </table>
+                <div>
+                    <table id="server_weakness" border="1">
+                        <tr>
+                            <td style="text-align: center;">서버 보안 설정</td>
+                        </tr>
+                        <tr>
+                            <td id="weakness_info" style="text-align: left;"></td>
+                        </tr>
+                        
+                    </table>
+                </div>
+                <div>
+                    <table id="docker_info">
+                        <tr>
+                            <td style="text-align: center;">Docker image 점검 및 조치</td>
+                        </tr>
+                    </table>
+                    <table id="outer_docker">
+                        <tr>
+                            <td>도커 이미지 점검 및 조치 결과입니다.
+                                이미지 조치는 패키지 업데이트를 통해 해결 가능한 CVE를 최소화하였으며,
+                                도커 컨테이너의 보안 사항을 위해 root 권한 부여를 제한되어있습니다.<br>
+                                제한된 root 권한 대신 일반 사용자 user의 최소 권한으로 컨테이너가 실행됩니다.
+                                하지만 조치된 이미지인 경우에도 해결 불가한 CVE를 가진 패키지가 다수 발견된다면
+                                최신 버전의 도커 이미지 사용을 권장합니다.
+                                <br><br><div id="dockertableContainer"></div></td>
+                        </tr>
+                    </table>
+                    
+                </div>
+                <div>
+                    <table id="package_diff" border="1">
+                        <tr>
+                            <td style="text-align: center;">패키지 변경 사항</td>
+                        </tr>
+                    </table>
+                    <table id="outer_pkgtable">
+                        <tr>
+                            <td>
+                                <div id="pkgtableContainer"></div>
+                            </td>
+                        </tr>
+                    </table>
+                    <br>
+                    <a href="https://nvd.nist.gov/vuln/search" target="_blank"><strong>https://nvd.nist.gov/vuln/search</strong></a>에서 CVE ID를 검색하여 자세한 정보를 찾아보십시오.
+                </div>
+                
+            </div>
+            <script>
+                // 홍찬선배 url
+                const fullUrl = "http://49.50.166.249:8000/hc/swdict/?hostname=101.101.211.69&port=22&username=root&password=captest%21&os_type=ubuntu&save=false";
+                
+                document.addEventListener('DOMContentLoaded', function() {
+
+                    fetch(fullUrl)
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        }
+                        throw new Error('네트워크 응답이 올바르지 않습니다.');
+                    })
+                    .then(jsonData => {
+                        createTableFromJson(jsonData);
+                    })
+                    .catch(error => {
+                        console.error('데이터 가져오기 중 문제가 발생했습니다:', error);
+                    });
+                });
+
+
+
+                // 홍찬선배 (패키지 변경 사항)
+                function createTableFromJson(jsonData) {
+                    // 테이블 엘리먼트 생성
+                    let table = document.createElement('table');
+                    table.style.width = '100%';
+                    table.setAttribute('border', '1');
+                    table.style.tableLayout = 'fixed'; // 테이블 레이아웃을 고정으로 설정
+                    table.id = 'new_table';
+                
+                    // 테이블 헤더 추가
+                    let tr = table.insertRow(-1); // 테이블 행 생성
+                
+                    let headers = ['Package Name', 'CVE ID', 'CVSS v3.1', 'CVSS v3.0', 'CVSS v2.0'];
+                    for (let i = 0; i < headers.length; i++) {
+                        let th = document.createElement('th'); // 테이블 헤더 엘리먼트 생성
+                        th.innerHTML = headers[i];
+                        th.style.overflowWrap = 'break-word'; // 텍스트가 셀을 넘어가지 않도록 설정
+                        tr.appendChild(th);
+                    }
+                    
+                    
+                    // JSON 데이터를 순회하면서 테이블 데이터 추가
+                    jsonData.result.forEach(item => {
+                        let firstEntry = true;
+                        let packageRowSpan = item.vulnerabilities.length; // Package Name 병합을 위한 rowspan 계산
+                
+                        item.vulnerabilities.forEach(vulnerability => {
+                            let tr = table.insertRow(-1);
+                
+                            if (firstEntry) {
+                                let packageCell = tr.insertCell(-1);
+                                packageCell.rowSpan = packageRowSpan; // 첫 번째 항목에 대해서만 rowspan 적용
+                                packageCell.innerHTML = item.package_name;
+                                packageCell.style.overflowWrap = 'break-word'; // 텍스트가 셀을 넘어가지 않도록 설정
+                                firstEntry = false;
+                            }
+                
+                            let cveCell = tr.insertCell(-1);
+                            cveCell.innerHTML = vulnerability.cve_id;
+                            cveCell.style.overflowWrap = 'break-word';
+                
+                            let cvssV31Cell = tr.insertCell(-1);
+                            cvssV31Cell.innerHTML = vulnerability.cvssMetricV31 || '-';
+                            cvssV31Cell.style.overflowWrap = 'break-word';
+                
+                            let cvssV30Cell = tr.insertCell(-1);
+                            cvssV30Cell.innerHTML = vulnerability.cvssMetricV30 || '-';
+                            cvssV30Cell.style.overflowWrap = 'break-word';
+                
+                            let cvssV2Cell = tr.insertCell(-1);
+                            cvssV2Cell.innerHTML = vulnerability.cvssMetricV2 || '-';
+                            cvssV2Cell.style.overflowWrap = 'break-word';
+                        });
+                    });
+                
+                    // 생성한 테이블을 div에 추가
+                    let container = document.getElementById('pkgtableContainer');
+                    container.innerHTML = "";
+                    container.appendChild(table);
+                }
+                //http://localhost:8000/hs/cve_result
+                //한별이 docker
+                //한별이 임시 docker파일
+                function loadDockerAndDisplayTable(){
+                    fetch('cve_result')
+                        .then(response => response.json())
+                        .then(jsonData =>{
+                            createDockerTableFromJson(jsonData);
+                        })
+                        .catch(error => console.error('Error loading dockerImage JSON:', error));
+                }
+                // 페이지 로딩 시 두 JSON 파일 모두 불러오기 위해 두 함수 모두 호출합니다.
+
+
+                function createDockerTableFromJson(jsonData){
+                    // JSON 파일을 불러옵니다
+                    fetch('http://localhost:8000/hs/cve_result')
+                    .then(response => response.json()) // 응답을 JSON으로 변환
+                    .then(jsonData => {
+                        let table = document.createElement('table'); // 여기서 테이블을 생성
+                        table.style.width = '100%';
+                        table.setAttribute('border', '1');
+                        table.style.tableLayout = 'fixed';
+                        table.id = 'docker_table';
+                    
+                        // 첫 번째 행 생성
+                        let tr = table.insertRow(-1);
+                        
+                        // "ImageName", "before", "after"에 대한 헤더 생성 및 rowspan 설정
+                        let mainHeaders = ['ImageName', 'before', 'after(only critical and high)'];
+                        for (let i = 0; i < mainHeaders.length; i++) {
+                            let th = document.createElement('th');
+                            th.innerHTML = mainHeaders[i];
+                            th.style.overflowWrap = 'break-word';
+                            th.setAttribute('rowspan', '2'); // 두 번째 행까지 확장
+                            tr.appendChild(th);
+                        }
+                    
+                        // "leftcve"에 대한 헤더 생성 없이 바로 "Library Name", "CVE", "Severity" 헤더 추가
+                        let leftcveTh = document.createElement('th');
+                        leftcveTh.innerHTML = 'leftcve';
+                        leftcveTh.setAttribute('colspan','3')
+                        tr.appendChild(leftcveTh); // 첫 번째 행에 "leftcve" 추가
+                        
+                        // 두 번째 행 생성
+                        tr = table.insertRow(-1);
+                        let subHeaders = ['Library Name', 'CVE', 'Severity'];
+                        for (let i = 0; i < subHeaders.length; i++) {
+                            let th = document.createElement('th');
+                            th.innerHTML = subHeaders[i];
+                            th.style.overflowWrap = 'break-word';
+                            tr.appendChild(th);
+                        }
+
+                        // jsonData.dockerImage를 순회하면서 각 이미지에 대한 처리를 수행
+                        Object.values(jsonData.dockerImage).forEach(item => {
+                            let firstEntry = true;
+
+                            let filteredVulnerabilities = item.leftcve.filter(v => v.Severity === "HIGH" || v.Severity === "CRITICAL");
+                        
+                            // before와 after 값에 대한 개수 계산
+                            let beforeCounts = {};
+                            let afterCounts = {};
+                            filteredVulnerabilities.forEach(v => {
+                                beforeCounts[v.before] = (beforeCounts[v.before] || 0) + 1;
+                                afterCounts[v.after] = (afterCounts[v.after] || 0) + 1;
+                            });
+                        
+                            let usedBefores = {};
+                            let usedAfters = {};
+                        
+                            filteredVulnerabilities.forEach(vulnerability => {
+                                let tr = table.insertRow(-1);
+                        
+                                if (firstEntry) {
+                                    let imageNameCell = tr.insertCell(-1);
+                                    imageNameCell.rowSpan = filteredVulnerabilities.length;
+                                    imageNameCell.innerHTML = item.ImageName;
+                                    imageNameCell.style.overflowWrap = 'break-word';
+                                    firstEntry = false;
+                                }
+                        
+                                // before 값에 대한 로직
+                                if (!usedBefores[vulnerability.before]) {
+                                    let beforeCell = tr.insertCell(-1);
+                                    beforeCell.rowSpan = beforeCounts[vulnerability.before];
+                                    beforeCell.innerHTML = item.before;
+                                    beforeCell.style.overflowWrap = 'break-word';
+                                    usedBefores[vulnerability.before] = true;
+                                }
+                        
+                                // after 값에 대한 로직
+                                if (!usedAfters[vulnerability.after]) {
+                                    let afterCell = tr.insertCell(-1);
+                                    afterCell.rowSpan = afterCounts[vulnerability.after];
+                                    afterCell.innerHTML = item.after;
+                                    afterCell.style.overflowWrap = 'break-word';
+                                    usedAfters[vulnerability.after] = true;
+                                }
+                        
+                                // 나머지 셀 추가 로직
+                                let libraryNameCell = tr.insertCell(-1);
+                                libraryNameCell.innerHTML = vulnerability["Libarary Name"]; // 오타 확인 필요: "Library Name"이 올바른지 확인
+                                libraryNameCell.style.overflowWrap = 'break-word';
+                        
+                                let cveCell = tr.insertCell(-1);
+                                cveCell.innerHTML = vulnerability.CVE;
+                                cveCell.style.overflowWrap = 'break-word';
+                        
+                                let severityCell = tr.insertCell(-1);
+                                severityCell.innerHTML = vulnerability.Severity;
+                                severityCell.style.overflowWrap = 'break-word';
+                            });
+                        });
+
+                        // 테이블을 div에 추가
+                        let container = document.getElementById('dockertableContainer');
+                        container.innerHTML = ""; // 기존 내용을 지웁니다
+                        container.appendChild(table); // 테이블을 추가합니다
+                    })
+                    .catch(error => console.error('Error loading the JSON file:', error));
+                }
+
+                //유지&현수 서버보안 설정
+                function loadAndDisplayWeaknessInfo() {
+                    const storedFootContent = JSON.parse(localStorage.getItem('footContent') || "[]");
+                    let 취약항목Str = storedFootContent.length > 0 ? storedFootContent.join('<br>') : '취약 항목 정보 없음';
+                    취약항목Str = "<strong>[취약 항목]</strong><br>" + 취약항목Str;
+
+                    const storedTitles = JSON.parse(localStorage.getItem("subsectionTitles") || "[]");
+                    let 안전조치항목Str = storedTitles.length > 0 ? storedTitles.join('<br>') : '안전 조치된 항목 정보 없음';
+                    안전조치항목Str = "<strong>[안전 조치 항목]</strong><br>" + 안전조치항목Str;
+
+                    let 수동조치권장Str = `
+                        <strong>[수동 조치 권장]</strong><br>
+                        3. 계정 잠금(임계값 설정): 로그인 5회 이상 실패시 계정 잠금<br>
+                        15. world writable 파일 점검<br>
+                        &nbsp; &nbsp; &nbsp;: 생성된 15-1.World_Writeable.txt 의 목록과 기본적으로 생성되는 world writable 파일간의 비교가 필요<br>
+                        25. NFS 접근통제: 해당 공유 디렉터리의 권한이 적절한지 수동으로 체크<br>
+                        27. RPC 서비스 상태 확인: 필요에 따라서 rcp 패키지를 업데이트 시키시오<br>
+                        34. DNS Zone: DNS Zone Transfer를 허가된 사용자에게만 허용해야 함<br>
+                        38. Apache 불필요한 파일 제거: 웹 서버를 정기적으로 검사하여 불필요한 파일을 제거<br>
+                        43. 로그의 정기적 검토 및 보고: 로그 기록에 대해 정기적 검토, 분석, 이에 대한 리포트 작성 및 보고
+                    `;
+
+                    // 'weakness_info' 태그 내에 내용 삽입
+                    const infoElement = document.getElementById('weakness_info');
+                    infoElement.innerHTML = 취약항목Str + "<br>" + "<br>" + 안전조치항목Str + "<br>"+ "<br>" + 수동조치권장Str;
+                }
+
+                window.onload = function() {
+                    const targetIp = localStorage.getItem("targetIp");
+                    document.getElementById("targetIpTd").textContent = targetIp;
+                    
+                    const now = new Date();
+                    const currentTime = now.toLocaleTimeString(); 
+                    document.getElementById("currentTimeTd").textContent = currentTime;
+
+                    loadAndDisplayWeaknessInfo();
+                    loadDockerAndDisplayTable();
+                };
+
+        </script>
+
+    </body>
+</html>
