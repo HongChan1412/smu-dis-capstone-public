@@ -24,39 +24,66 @@
     </div>
     <script>
         function createDockerTableFromJson(jsonData){
-                fetch('cve_result')
-                .then(response => response.json()) 
-                .then(data => {
-                    let table = document.createElement('table'); 
-                    table.style.width = '50%'; 
-                    table.style.margin = 'auto'; 
-                    table.style.tableLayout = 'fixed';
-                    table.id = 'docker_table';
-                    
-                    let headerRow = table.insertRow(-1);
-                    let headerCell1 = document.createElement('th');
-                    headerCell1.textContent = 'No.';
-                    let headerCell2 = document.createElement('th');
-                    headerCell2.textContent = 'ImageName';
-                    headerRow.appendChild(headerCell1);
-                    headerRow.appendChild(headerCell2);
-                    
-                    let count = 1; 
-                    for (let imageName in data.dockerImage) {
-                        if (data.dockerImage.hasOwnProperty(imageName)) {
-                            let row = table.insertRow(-1); 
-                            let cell1 = row.insertCell(0); 
-                            let cell2 = row.insertCell(1); 
-                            cell1.textContent = count++; 
-                            cell2.textContent = data.dockerImage[imageName].ImageName;
-                        }
+            // 기존 로컬 스토리지에서 값을 가져오는 코드 유지
+            const targetIp = localStorage.getItem("targetIp");
+            const targetPort = localStorage.getItem("targetPort");
+            const targetUser = localStorage.getItem("targetUser");
+            const targetPasswd = localStorage.getItem("targetPasswd");
+            
+            const baseUrl = "http://49.50.166.249:8000/hc/dockers"; 
+            const queryParams = `?host=${targetIp}&port=${targetPort}&username=${targetUser}&password=${targetPasswd}`;
+            const fullUrl = baseUrl + queryParams;
+            console.log("DockerImage URL: ", fullUrl);
+
+            fetch(fullUrl)
+            .then(response => response.json()) 
+            .then(data => {
+                let table = document.createElement('table'); 
+                table.style.width = '80%'; 
+                table.style.margin = 'auto'; 
+                table.style.tableLayout = 'fixed';
+                table.id = 'docker_table';
+                
+                let headerRow = table.insertRow(-1);
+                let headerCell1 = document.createElement('th');
+                headerCell1.textContent = 'No.';
+                let headerCell2 = document.createElement('th');
+                headerCell2.textContent = 'ImageName';
+                let headerCell3 = document.createElement('th'); 
+                headerCell3.textContent = 'Modified tar';
+                headerRow.appendChild(headerCell1);
+                headerRow.appendChild(headerCell2);
+                headerRow.appendChild(headerCell3); 
+                
+                let count = 1; 
+                for (let imageName in data.dockerImage) {
+                    if (data.dockerImage.hasOwnProperty(imageName)) {
+                        let row = table.insertRow(-1); 
+                        let cell1 = row.insertCell(0); 
+                        let cell2 = row.insertCell(1);
+                        let cell3 = row.insertCell(2); 
+                        cell1.textContent = count++; 
+                        cell2.textContent = data.dockerImage[imageName].ImageName;
+
+                        // 버튼 생성 및 셀에 추가
+                        let button = document.createElement('button');
+                        button.textContent = 'tar Download';
+                        button.onclick = function() {
+                            // 이미지 이름을 사용하여 호출할 URL 설정
+                            const tarUrl = `http://49.50.166.249:8000/hc/tars?image=${data.dockerImage[imageName].ImageName}`;
+                            window.open(tarUrl, '_blank'); // 새 창에서 URL 호출
+                        };
+                        cell3.appendChild(button); // 셀에 버튼 추가
                     }
-                    document.getElementById('tableContainer').appendChild(table);
-                })
-                .catch(error => console.error('Error loading the JSON file:', error));
-                document.body.appendChild(document.createElement('br'));
-                document.body.appendChild(document.createElement('br'));
-            }
+                }
+                document.getElementById('tableContainer').appendChild(table);
+            })
+            .catch(error => console.error('Error loading the JSON file:', error));
+
+            document.body.appendChild(document.createElement('br'));
+            document.body.appendChild(document.createElement('br'));
+        }
+
 
             function createlastButton() {
                 const button = document.createElement('button');
