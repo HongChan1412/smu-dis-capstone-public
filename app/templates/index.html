@@ -1,21 +1,100 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
+    
     <head>
-        <title>보안 가이드라인 기반의 기업서버 취약점 점검 및 교체</title>
-        <link rel="stylesheet" type="text/css" href="/static/css/style.css">
-        <script src="/static/js/script.js"></script>
+        <title>서버 보안 가이드라인에 따른 점검 및 보고서 생성 시스템</title>
+        <link rel="stylesheet" type="text/css" href="/static/css/index.css">
+        <script src="/static/js/javascript.js"></script>
     </head>
+    
     <body>
-        <h1>보안 가이드라인 기반의 기업서버 취약점 점검 및 교체</h1>
-        IP: <input id="ip" type="text" value="172.16.235.134"><br>
-        Port: <input id="port" type="text" value="22" placeholder="Port (default 22)">
-        User: <input id="user" type="text" value="root"><br>
-        Password: <input id="passwd" type="password" value="guest1412"><br>
-        <button id="connect" onclick="connect()">Connect</button>
-        <button id="disconnect" onclick="disconnect()" disabled>Disconnect</button>
+        <div style=" margin-left: 5%; margin-top: 3%;">
+            <b class="title">서버, 서비스 점검 및 조치 자동화 시스템</b></br>
+            <b>해당 시스템은 서버 보안 가이드라인 기반의 서버 점검 및 조치와 서버 내 시스템 점검으로 진행됩니다.</b>
+        </div>
         <br>
-        Command: <input id="command" type="text" placeholder="Type a command">
-        <button id="send" onclick="send()" disabled>Send</button>
-        <ul id="log"></ul>
-    </body>
+        
+        <hr style="width:1400px;">
+        <br>
+        <div style="margin: auto; text-align:center;">
+            <b class="text">클라이언트의 서버 정보를 입력하면 원격으로 점검이 진행됩니다.</b>
+        </div>
+        </br>
+        
+        <div>            
+            <div>
+                <div style ="display: flex; width: 70%;margin:auto;">
+                    <div class="join-wrapper">
+                            <h2>서버정보 입력</h2>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th> IP </th>
+                                        <th> <input id="ip" type="text" placeholder="0.0.0.0"> </th>
+                                    </tr>
+                                    <tr>
+                                        <th> Port </th>
+                                        <th> <input id="port" type="text" placeholder="22" placeholder="Port (default 22)"> </th>
+                                    </tr>
+                                    <tr>
+                                        <th> User </th>
+                                        <th> <input id="user" type="text" placeholder="root"> </th>
+                                    </tr>
+                                    <tr>
+                                        <th> Password </th>
+                                        <th> <input id="passwd" type="password" value="guest1412"> </th>
+                                    </tr>
+                                </tbody>   
+                            </table>
+                            <div style=" margin-left: 110px;">
+                                <button id="connect" onclick="connect()">Connect</button>
+                                <button id="disconnect" onclick="disconnect()" disabled>Disconnect</button>
+                            </div>
+                    </div>
+                    <div class="join-wrapper">
+                        <div style="width: 250px;">
+                            <b id="choice_box">운영체제 선택</b>
+                            </br>
+                            </br>
+                            <form id="checkboxForm">
+                            <input type="checkbox" id="option1" name="option" value="Ubuntu">
+                            <label for="option1">Ubuntu-18.04</label><br>
+                            <input type="checkbox" id="option2" name="option" value="CentOS">
+                            <label for="option2">CentOS-7.9</label><br>
+                            </form> 
+                            <p id="result"></p> 
+                            <button id="checkButton" style="margin-bottom: 20px; margin-left: 170px; ">점검 실행</button>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div style="margin: auto; text-align:center;">
+                    <b class="comm">점검 항목은 가이드라인를 기반한 서버 위반 사항, 서버 내 서비스, 도커 이미지를 대상으로 진행됩니다.</b><br>
+                    <b class="comm">서버 점검 결과는 PDF 형태로 다운 받을 수 있습니다..</b>
+                </div>
+            </div>            
+            <br>
+    </body>        
+    <div style="display: block; margin:10px; text-align: center;">
+        <hr style="width:1400px;"></hr>
+        <b class="subj"> 상명대학교 정보보안공학과 </b></br>
+        <b class="subj"> 1조 내일봬요누나 </b>         
+    </div>
+    <script>
+        document.getElementById("checkButton").addEventListener("click", function() {
+            var ubuntuCheckbox = document.getElementById("option1");
+            var centOSCheckbox = document.getElementById("option2");
+            var resultText = document.getElementById("result");
+        
+            if (ubuntuCheckbox.checked && centOSCheckbox.checked) {
+                resultText.textContent = "하나의 운영체제만 선택해주세요.";
+            } else if (ubuntuCheckbox.checked) {
+                window.location.href = "ubuntu"; // Ubuntu가 선택된 경우 이동할 페이지
+            } else if (centOSCheckbox.checked) {
+                window.location.href = "centos"; // CentOS가 선택된 경우 이동할 페이지
+            } else {
+                resultText.textContent = "운영체제를 선택해주세요.";
+            }
+        });
+    </script>
 </html>

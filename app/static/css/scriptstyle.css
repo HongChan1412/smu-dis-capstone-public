@@ -1,0 +1,129 @@
+/* 본문 스타일 설정 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');    
+    
+*{
+    color: #353535;
+    font-family: "Noto Sans KR", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 700;
+    font-style: normal;
+    
+}
+
+.title{ 
+    font-size: 35px;
+    color: #353535;
+    text-decoration: none;   
+    font-weight: 900;
+}
+
+h3{
+    display: inline; margin-right: 10px;
+}
+
+hr{   
+    width:93%;
+    height : 1px;
+}
+
+#docker_table {
+    width: 50%;
+    margin: auto;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+#docker_table th, #docker_table td {
+    border: 1px solid black;
+    text-align: center;
+}
+#docker_table th:first-child, #docker_table td:first-child {
+    width: 15%; /* "No." 칸의 너비를 줄입니다. */
+}
+#docker_table th:nth-child(2), #docker_table td:nth-child(2) {
+    width: 90%; /* 이미지 이름 칸의 너비를 늘립니다. */
+}
+
+
+.toggle-button{
+    border-color: #78befc;
+    color: azure;
+    background-color: #78befc;
+}
+/* .toggle-content의 기본 스타일 */
+.toggle-content {
+    
+    display: none; /* 기본적으로 .toggle-content를 숨김 */
+}
+
+/* 테이블 스타일 설정 */
+table {
+    margin: 0px auto; /* 테이블을 중앙 정렬 */
+    width: 800px; /* 테이블의 너비를 내용에 맞게 조절 */
+    font-size: 12px; /* 글자 크기를 12px로 설정 */
+    
+}
+.cell{
+    width:100px;
+}
+/* 셀(padding) 스타일 설정 */
+td {
+    padding: 10px; /* 셀 안쪽 여백을 10px로 설정 */
+}
+
+/* 필드셋 스타일 설정 */
+fieldset{
+    margin: 0px auto; /* 필드셋을 중앙 정렬 */
+    width: min-content; /* 너비 고정 */
+    height: min-content; /* 높이 고정 */
+    border: 2px solid #000; /* 테두리 설정 */
+    margin-bottom: 10px;
+}
+
+
+/* 필드셋 내부의 첫 번째 h5 태그에 대한 상단 마진 조정 */
+fieldset > h5:first-of-type {
+    margin-top: 0;
+}
+
+/* 상세 정보 버튼 마진 설정 */
+.detail-button {
+    
+    margin-bottom: 20px; /* 원하는 간격으로 조절 */
+}
+
+.toggle-content {
+    transition: all 0.3s ease;
+}
+
+.hidden {
+    display: none;
+}
+
+.visible {
+    display: block; /* 또는 'inline', 'inline-block' 등 요소에 따라 적절한 값을 사용하세요 */
+}
+
+.button-container {
+    display: flex;
+    align-items: center; /* 버튼과 글자를 수직으로 중앙 정렬합니다 */
+}
+
+
+#load {
+    display: flex;
+    justify-content: center; /* 가로 중앙 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+    position: fixed; /* 화면에 고정 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.5); /* 배경색과 반투명도 조정 */
+    z-index: 1000; /* 다른 요소들 위에 오도록 z-index 설정 */
+}
+
+#load img {
+    width: 100px; /* 로딩 이미지 크기 조정, 필요에 따라 변경 */
+    height: 100px; /* 로딩 이미지 크기 조정, 필요에 따라 변경 */
+}
+
