@@ -2,290 +2,372 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>CentOS 보안 설정 점검 결과</title>
-    <link rel="stylesheet" type="text/css" href="/static/css/scriptstyle.css">
+    <title>centOSCheckbox 보안 설정 점검 결과</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/ubuntu.css">
     <script src="/static/js/script.js"></script>
 </head>
+<div style=" margin-left: 5%; margin-top: 3%;">
+    <b class="title">서버, 서비스 점검 및 조치 자동화 시스템</b></br>
+    <b>해당 시스템은 서버 보안 가이드라인 기반의 서버 점검 및 조치와 서버 내 시스템 점검으로 진행됩니다.</b>
+</div>
+<br>
 <body>
-    <br>
-    <br>
-    <div id="load" style="display: flex; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.5); z-index: 1000;">
-        <img src="/static/css/103.gif" alt="loading" style="transform: translateX(-75px); width: 170px; height: 30px;">
-    </div>   
-    <div id="resultContainer"></div>
-    <h1>☑️ CentOS 보안 설정 점검 결과 ☑️</h1>
-    <h4> ※ 조치 가능한 항목이 맨 아래에 체크박스가 있습니다.</h4>
-    <h4> 조치 하고 싶은 항목을 중복으로 체크 해주세요.</h4>
-    <hr>
-    <script>
-       function showLoading() {
-            document.getElementById("load").style.display = "flex";
-        }
-
-        function hideLoading() {
-            document.getElementById("load").style.display = "none";
-        }
-        showLoading();
-        document.addEventListener('DOMContentLoaded', function() {
-            const targetIp = localStorage.getItem("targetIp");
-            const targetPort = localStorage.getItem("targetPort");
-            const targetUser = localStorage.getItem("targetUser");
-            const targetPasswd = localStorage.getItem("targetPasswd");
-
-            const encodedIp = encodeURIComponent(targetIp);
-            const encodedPort = encodeURIComponent(targetPort);
-            const encodedUser = encodeURIComponent(targetUser);
-            const encodedPasswd = encodeURIComponent(targetPasswd);
-            
-            // URL 조합
-            const baseUrl = "http://49.50.166.249:8000/hc/execute_script"; 
-            const queryParams = `?host=${targetIp}&port=${targetPort}&username=${targetUser}&password=${targetPasswd}&os_type=centos&script=check`;
-            const fullUrl = baseUrl + queryParams;
-            console.log("요청된 URL: ", fullUrl);
-
-            fetch(fullUrl)
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
+    <div style="text-align: center;">
+        <br>
+        <div id="load" style="display: flex; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.5); z-index: 1000;">
+            <img src="/static/css/103.gif" alt="loading" style="transform: translateX(0px); width: 170px; height: 30px;">
+        </div>    
+        <div id="resultContainer"></div>
+        <h1>☑️ CentOS 보안 설정 점검 결과☑️</h1>
+        <h4> ※ 조치 가능한 항목이 맨 아래에 체크박스가 있습니다.</h4>
+        <h4> 조치 하고 싶은 항목을 중복으로 체크 해주세요.</h4>
+        <div style="text-align: center;">
+            <hr>
+            <script>
+                function showLoading() {
+                    document.getElementById("load").style.display = "flex";
                 }
-                throw new Error('네트워크 응답이 올바르지 않습니다.');
-            })
-            .then(data => {
-                displayData(data);
-                hideLoading();
-            })
-            .catch(error => {
-                console.error('데이터 가져오기 중 문제가 발생했습니다:', error);
-                hideLoading();
-            });
-        });
-        
-        function displayData(data) {
-            // head 섹션 출력
-            const headContent = data.head.content;
-            headContent.forEach((section, index) => {
-                if (index !== 0) {
-                    document.body.appendChild(document.createElement('hr'));
+
+                function hideLoading() {
+                    document.getElementById("load").style.display = "none";
                 }
-    
-                const sectionTitle = document.createElement('h2');
-                sectionTitle.textContent = section.title;
-                document.body.appendChild(sectionTitle);
-    
-                const resultList = document.createElement('ul');
-                section.result.forEach(item => {
-                    const listItem = document.createElement('h5'); 
-                    listItem.textContent = item;
-                    resultList.appendChild(listItem);
+                showLoading();
+                document.addEventListener('DOMContentLoaded', function() {
+                    const targetIp = localStorage.getItem("targetIp");
+                    const targetPort = localStorage.getItem("targetPort");
+                    const targetUser = localStorage.getItem("targetUser");
+                    const targetPasswd = localStorage.getItem("targetPasswd");
+                    
+                    const encodedIp = encodeURIComponent(targetIp);
+                    const encodedPort = encodeURIComponent(targetPort);
+                    const encodedUser = encodeURIComponent(targetUser);
+                    const encodedPasswd = encodeURIComponent(targetPasswd);
+
+                    // URL 조합
+                    const baseUrl = "http://49.50.166.249:8000/hc/execute_script"; 
+                    const queryParams = `?host=${targetIp}&port=${targetPort}&username=${targetUser}&password=${targetPasswd}&os_type=centos&script=check`;
+                    const fullUrl = baseUrl + queryParams;
+                    console.log("요청된 URL: ", fullUrl);
+
+                    fetch(fullUrl)
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        }
+                        throw new Error('네트워크 응답이 올바르지 않습니다.');
+                    })
+                    .then(data => {
+                        displayData(data);
+                        hideLoading();
+                    })
+                    .catch(error => {
+                        console.error('데이터 가져오기 중 문제가 발생했습니다:', error);
+                        hideLoading();
+                    });
                 });
-                document.body.appendChild(resultList);
-            });
-            document.body.appendChild(document.createElement('hr'));
+                
+                function displayData(data) {
+                    // head 섹션 출력
+                    const headContent = data.head.content;
+                    headContent.forEach((section, index) => {
+                        if (index !== 0) {
+                            document.body.appendChild(document.createElement('hr'));
+                        }
             
-            // body 섹션 출력
-            const bodyContent = data.body;
-            bodyContent.forEach((section, index) => {
-                if (index !== 0) {
+                        const sectionTitle = document.createElement('h2');
+                        sectionTitle.textContent = section.title;
+                        document.body.appendChild(sectionTitle);
+            
+                        const resultList = document.createElement('ul');
+                        section.result.forEach(item => {
+                            const listItem = document.createElement('h4'); 
+                            listItem.style.textAlign="center";
+                            listItem.textContent = item;
+                            resultList.appendChild(listItem);
+                        });
+                        document.body.appendChild(resultList);
+                    });
                     document.body.appendChild(document.createElement('hr'));
-                }
-    
-                const sectionTitle = document.createElement('h2');
-                sectionTitle.textContent = section.title;
-                sectionTitle.style.color = 'blue';
-                document.body.appendChild(sectionTitle);
-    
-                section.content.forEach((subsection, index )=> {
-                    const titleContainer = document.createElement('div'); 
-                    titleContainer.style.display = 'flex';
-                    titleContainer.style.justifyContent = 'center';
+                    
+                    // body 섹션 출력
+                    const bodyContent = data.body;
+                    bodyContent.forEach((section, index) => {
+                        if (index !== 0) {
+                            document.body.appendChild(document.createElement('hr'));
+                        }
+            
+                        const sectionTitle = document.createElement('h2');
+                        sectionTitle.textContent = section.title;
+                        sectionTitle.style.color = 'blue';
+                        document.body.appendChild(sectionTitle);
+            
+                        section.content.forEach((subsection, index )=> {
+                            const titleContainer = document.createElement('div'); 
+                            titleContainer.style.display = 'flex';
+                            titleContainer.style.justifyContent = 'center';
 
 
-                    const subsectionTitle = document.createElement('h3');
-                    subsectionTitle.textContent = subsection.subtitle;
-                    titleContainer.appendChild(subsectionTitle);
-                    document.body.appendChild(titleContainer);
+                            const subsectionTitle = document.createElement('h3');
+                            subsectionTitle.textContent = subsection.subtitle;
+                            titleContainer.appendChild(subsectionTitle);
+                            document.body.appendChild(titleContainer);
 
-                    const resultList = document.createElement('ul');
-                    subsection.result.forEach(item => {
-                        const listItem = document.createElement('h5'); 
-                        listItem.innerHTML = item.replace(/\[안전\]/g, '<span style="color:green;">[안전]</span>')
-                                                .replace(/\[취약\]/g, '<span style="color:red;">[취약]</span>')
-                                                .replace(/\[수동조치권장\]/g, '<span style="color:hsl(60, 60%, 50%);">[수동조치권장]</span>');
-                        resultList.appendChild(listItem);
+                            const resultList = document.createElement('ul');
+                            subsection.result.forEach(item => {
+                                const listItem = document.createElement('h4'); 
+                                listItem.style.textAlign="center";
+                                listItem.innerHTML = item.replace(/\[안전\]/g, '<span style="color:green;">[안전]</span>')
+                                                        .replace(/\[취약\]/g, '<span style="color:red;">[취약]</span>')
+                                                        .replace(/\[수동조치권장\]/g, '<span style="color:gold;">[수동조치권장]</span>');
+                                resultList.appendChild(listItem);
+                            });
+
+                        document.body.appendChild(resultList);
+                        document.body.appendChild(document.createElement('hr'));
+                        });
                     });
 
-                document.body.appendChild(resultList);
-                document.body.appendChild(document.createElement('hr'));
-                });
-            });
+                    // foot 섹션 출력
+                    const footContent = data["foot"]; 
 
-            // foot 섹션 출력
-            const footContent = data["foot"]; 
+                    if (footContent && footContent.length > 0) {
+                        const footTitle = document.createElement('h2');
+                        footTitle.textContent = '[취약] 항목';
+                        footTitle.style.color = 'red';
+                        document.body.appendChild(footTitle);
 
-            if (footContent && footContent.length > 0) {
-                const footTitle = document.createElement('h2');
-                footTitle.textContent = '<[취약]이 나온 항목>';
-                footTitle.style.color = 'red';
-                document.body.appendChild(footTitle);
-
-                const footList = document.createElement('ul');
-                footContent.forEach(subtitle => {
-                    const listItem = document.createElement('h5');
-                    listItem.textContent = subtitle;
-                    footList.appendChild(listItem);
-                });
-                document.body.appendChild(footList);
-                // footContent 배열을 문자열로 변환
-                localStorage.setItem('footContent', JSON.stringify(footContent));
-            }
-            document.body.appendChild(document.createElement('hr'));
-
-            const tableTitle = document.createElement('h2'); 
-            tableTitle.textContent = '<조치가 가능한 항목>';
-            tableTitle.style.color = 'red';
-            document.body.appendChild(tableTitle);
-
-            const table = document.createElement('table');
-            table.style.width = '100%';
-            table.setAttribute('border', '1');
-            const thead = document.createElement('thead');
-            const headerRow = document.createElement('tr');
-            const firstHeader = document.createElement('th');
-            firstHeader.textContent = '항목';
-            headerRow.appendChild(firstHeader);
-            const headers = ['1번', '5번', '6번', '10번', '12번', '17번', '19번', '22번', '29번', '32번', '35번', '36번', '40번', '41번'];
-
-            // 스크립트 경로 매핑
-            const scriptPaths = {
-                "1번": "r01",
-                "5번": "r05",
-                "6번": "r06",
-                "10번": "r10",
-                "12번": "r12",
-                "17번": "r17",
-                "19번": "r19",
-                "22번": "r22",
-                "29번": "r29",
-                "32번": "r32",
-                "35번": "r35",
-                "36번": "r36",
-                "40번": "r40",
-                "41번": "r41",
-            };
-
-            headers.forEach(headerText => {
-                const header = document.createElement('th');
-                header.textContent = headerText;
-                headerRow.appendChild(header);
-            });
-            thead.appendChild(headerRow);
-            table.appendChild(thead);
-            const tbody = document.createElement('tbody');
-            const bodyRow = document.createElement('tr');
-            const firstBodyCell = document.createElement('td');
-            firstBodyCell.textContent = '체크';
-            bodyRow.appendChild(firstBodyCell);
-            headers.forEach(headerText => {
-                const checkboxCell = document.createElement('td');
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.checked = true;
-                checkbox.value = scriptPaths[headerText]; // 체크박스에 스크립트 경로를 값으로 저장
-                checkboxCell.appendChild(checkbox);
-                bodyRow.appendChild(checkboxCell);
-            });
-            tbody.appendChild(bodyRow);
-            table.appendChild(tbody);
-            document.body.appendChild(table);
-
-            function updateCheckedItems() {
-                let checkedValues = [];
-
-                document.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
-                    if (checkbox.checked) {
-                        let valueWithoutR = checkbox.value.replace('r', '✓');
-                        checkedValues.push(valueWithoutR);
+                        const footList = document.createElement('ul');
+                        footContent.forEach(subtitle => {
+                            const listItem = document.createElement('h4');
+                            listItem.style.textAlign="center";
+                            listItem.textContent = subtitle;
+                            footList.appendChild(listItem);
+                        });
+                        document.body.appendChild(footList);
+                        localStorage.setItem('footContent', JSON.stringify(footContent));
+                        //const vulnerableItemNumbers = footContent.map(item => item.match(/\d+/g)[0]);
                     }
-                });
+                    document.body.appendChild(document.createElement('hr'));
 
-                let checkedScripts = checkedValues.join(", ");
+                    const tableTitle = document.createElement('h2'); 
+                    tableTitle.textContent = '💡조치가 가능한 항목💡';
+                    tableTitle.style.color = '#353535';
+                    tableTitle.style.marginTop = "20px";
+                    document.body.appendChild(document.createElement('br'));
+                    document.body.appendChild(tableTitle);
 
-                let resultElement = document.querySelector('#checkedResult');
-                if (!resultElement) {
-                    resultElement = document.createElement("p");
-                    resultElement.id = 'checkedResult'; 
-                    document.body.appendChild(resultElement);
-                }
-                resultElement.textContent = `Check Number: ${checkedScripts}`;
-                resultElement.style.whiteSpace = "nowrap";
-            }
+                    const table = document.createElement('table');
+                    table.style.width = 'auto';
+                    table.style.height = "100px"
+                    table.style.fontSize="15px";
+                    table.style.backgroundColor="black"
+                    table.cellSpacing = '1';
+                    //table.style.borderCollapse = 'collapse';
+                    table.style.borderColor = "#000000";
+                     
+                    const thead = document.createElement('thead');
+                    const headerRow = document.createElement('tr');
+                    const firstHeader = document.createElement('th');
+                    
+                    firstHeader.textContent = '항목';
+                    firstHeader.style.padding="10px;"
+                    headerRow.style.height="50px";
+                    headerRow.style.fontSize="16px";
+                    //thead.style.height="50px";
+                    headerRow.appendChild(firstHeader);
+                    thead.style.backgroundColor="#c3bde0";
+                    thead.appendChild(headerRow);
+                    table.appendChild(thead);
 
-            document.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
-                checkbox.addEventListener('change', updateCheckedItems);
-            });
-            updateCheckedItems();
+                    const tbody = document.createElement('tbody');
+                    const bodyRow = document.createElement('tr');
+                    const firstBodyCell = document.createElement('td');
+                    firstBodyCell.textContent = '체크';
+                    bodyRow.appendChild(firstBodyCell);
 
-            // "조치 시작" 버튼 생성
-            const startActionButton = document.createElement('button');
-            startActionButton.textContent = '조치 시작';
-            startActionButton.style.marginTop = '30px';
-            startActionButton.style.marginBottom = '30px';
-            
-            startActionButton.addEventListener('click', function() {
-                showLoading();
-                const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-                const targetIp = localStorage.getItem("targetIp");
-                const targetPort = localStorage.getItem("targetPort");
-                const targetUser = localStorage.getItem("targetUser");
-                const targetPasswd = localStorage.getItem("targetPasswd");
-                const resultContainer = document.getElementById("resultContainer");
+                    const headers = ['01', '03', '04', '05', '09', '10', '11', '12', '20', '22', '29', '32', '35', '37', '39', '40', '41'];
 
-                const encodedIp = encodeURIComponent(targetIp);
-                const encodedPort = encodeURIComponent(targetPort);
-                const encodedUser = encodeURIComponent(targetUser);
-                const encodedPasswd = encodeURIComponent(targetPasswd);
-                const promises = [];
+                    // 스크립트 경로 매핑
+                    const scriptPaths = {
+                        "01": "r01", "03": "r03", "04": "r04",
+                        "05": "r05", "09": "r09", "10": "r10",
+                        "11": "r11", "12": "r12", "20": "r20",
+                        "22": "r22", "29": "r29", "32": "r32",
+                        "35": "r35", "37": "r37", "39": "r39",
+                        "40": "r40", "41": "r41",
+                    };
+                    const footNumbers = footContent.map(item => item.match(/\d+/)[0]);
 
-
-                checkboxes.forEach((checkbox, index) => {
-                    if (checkbox.checked) {
-                        const script = checkbox.value;
-                        const baseUrl = "http://49.50.166.249:8000/hc/execute_script";
-                        const queryParams = `?host=${targetIp}&port=${targetPort}&username=${targetUser}&password=${targetPasswd}&os_type=centos&script=${script}`;
-                        const fullUrl = baseUrl + queryParams;
+                    headers.forEach(headerText => {
+                        const headerNumber = headerText.match(/\d+/)[0]; // headers에서 숫자만 추출
                         
-                        console.log("Script URL: ", fullUrl); 
+                        // footContent에 일치하는 번호가 있다면 테이블 헤더와 체크박스 추가
+                        if (footNumbers.includes(headerNumber)) {
+                            const header = document.createElement('th');
+                            header.textContent = headerText;                      
+                            headerRow.appendChild(header);
+                            
+                            const checkboxCell = document.createElement('td');
+                            const checkbox = document.createElement('input');
+                            checkbox.type = 'checkbox';
+                            checkbox.checked = true; // 일치하는 경우 체크박스를 체크된 상태로 설정
+                            checkbox.value = scriptPaths[headerText]; // 체크박스에 스크립트 경로를 값으로 저장
+                            checkbox.style.width="25px";
+                            checkbox.style.height="25px";
+                            
+                            checkboxCell.appendChild(checkbox);
+                            bodyRow.appendChild(checkboxCell);
+                        }
+                    });
 
-                        // fetch API를 사용하여 Promise를 생성하고 배열에 추가
-                        const promise = fetch(fullUrl).then(response => {
-                            if (response.status === 200) {
-                                var jsonResponse = response.json();
-                                const resultElement = document.createElement("p");
-                                resultContainer.appendChild(resultElement);
-                            } else {
-                                const errorElement = document.createElement("p");
-                                resultContainer.appendChild(errorElement);
+                    tbody.appendChild(bodyRow);
+                    tbody.style.backgroundColor="white";
+                    tbody.style.textAlign="center";
+
+                    table.appendChild(tbody);
+                    document.body.appendChild(table);
+                    // const footNumbers = footContent.map(item => item.match(/\d+/)[0]);
+                    // headers.forEach(headerText => {
+                    //     const header = document.createElement('th');
+                    //     header.textContent = headerText;                      
+                    //     headerRow.appendChild(header);
+                        
+                    // });
+
+                    // // thead.style.backgroundColor="#c3bde0";
+                    // // thead.appendChild(headerRow);
+                    // // table.appendChild(thead);
+                    // // const tbody = document.createElement('tbody');
+                    // // const bodyRow = document.createElement('tr');
+                    // // const firstBodyCell = document.createElement('td');
+                    // // firstBodyCell.textContent = '체크';
+                    // // bodyRow.appendChild(firstBodyCell);
+
+                    // headers.forEach(headerText => {
+                    //     const checkboxCell = document.createElement('td');
+                    //     const checkbox = document.createElement('input');
+                        
+                    //     checkbox.type = 'checkbox';
+                    //     checkbox.checked = true;
+                    //     checkbox.value = scriptPaths[headerText]; // 체크박스에 스크립트 경로를 값으로 저장
+                    //     checkbox.style.width="25px";
+                    //     checkbox.style.height="25px";
+                        
+                    //     checkboxCell.appendChild(checkbox);
+                    //     bodyRow.appendChild(checkboxCell);
+                        
+                    // });
+                    
+                    // tbody.appendChild(bodyRow);
+                    // tbody.style.backgroundColor="white";
+                    // tbody.style.textAlign="center";
+                    
+                    // table.appendChild(tbody);
+                    // document.body.appendChild(table);
+                    
+                    function updateCheckedItems() {
+                        let checkedValues = [];
+
+                        document.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
+                            
+                            if (checkbox.checked) {
+                                let valueWithoutR = checkbox.value.replace('r', '🔑');
+                                checkedValues.push(valueWithoutR);
                             }
-                        }).catch(error => {
-                            // 네트워크 오류 처리
-                            const errorElement = document.createElement("p");
-                            resultContainer.appendChild(errorElement);
                         });
 
-                        promises.push(promise);
+                        let checkedScripts = checkedValues.join(", ");
+                        localStorage.setItem('checkedItems', checkedScripts);
+
+                        let resultElement = document.querySelector('#checkedResult');
+                        
+                        if (!resultElement) {
+                            resultElement = document.createElement("p");
+                            resultElement.id = 'checkedResult'; 
+                            document.body.appendChild(resultElement);
+                        }
+                        resultElement.textContent = `Check Number: ${checkedScripts}`;
+                        resultElement.style.whiteSpace = "nowrap";
+                        resultElement.style.textAlign="center";
+                        resultElement.style.fontSize="17px";
+                        resultElement.style.fontWeight="700";
                     }
-                });
-                // 모든 스크립트 실행이 완료되면 페이지를 이동
-                Promise.all(promises).then(() => {
-                    window.location.href = '/hs/centoscheck/resolve';
-                }).catch(error => {
-                    // 오류 처리
-                    console.error("스크립트 실행 중 오류 발생", error);
-                });
-            });
-            document.body.appendChild(startActionButton);
-        }
-    </script>
+
+                    document.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
+                        checkbox.addEventListener('change', updateCheckedItems);
+                    });
+                    updateCheckedItems();
+
+                    // "조치 시작" 버튼 생성
+                    const startActionButton = document.createElement('button');
+                    startActionButton.textContent = '조치 시작';
+                    startActionButton.style.marginTop = '30px';
+                    startActionButton.style.marginBottom = '30px';
+                    startActionButton.style.marginLeft = '47%';
+                    startActionButton.style.width="130px";
+                    startActionButton.style.height="40px";
+                    startActionButton.style.fontSize="15px";
+                    startActionButton.style.color="white";
+                    startActionButton.style.backgroundColor="#635994";
+                    startActionButton.style.borderColor = "white";
+
+                    startActionButton.addEventListener('click', function() {
+                        showLoading();
+                        const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+                        const targetIp = localStorage.getItem("targetIp");
+                        const targetPort = localStorage.getItem("targetPort");
+                        const targetUser = localStorage.getItem("targetUser");
+                        const targetPasswd = localStorage.getItem("targetPasswd");
+                        const resultContainer = document.getElementById("resultContainer");
+
+                        const encodedIp = encodeURIComponent(targetIp);
+                        const encodedPort = encodeURIComponent(targetPort);
+                        const encodedUser = encodeURIComponent(targetUser);
+                        const encodedPasswd = encodeURIComponent(targetPasswd);
+                        const promises = [];
+
+                        checkboxes.forEach((checkbox) => {
+                            if (checkbox.checked) {
+                                const script = checkbox.value;
+                                const baseUrl = "http://49.50.166.249:8000/hc/execute_script";
+                                const queryParams = `?host=${targetIp}&port=${targetPort}&username=${targetUser}&password=${targetPasswd}&os_type=centos&script=${script}`;
+                                const fullUrl = baseUrl + queryParams;
+
+                                console.log("Script URL: ", fullUrl);
+
+                                // fetch API를 사용하여 Promise를 생성하고 배열에 추가
+                                const promise = fetch(fullUrl).then(response => {
+                                    if (response.status === 200) {
+                                        var jsonResponse = response.json();
+                                        const resultElement = document.createElement("p");
+                                        resultContainer.appendChild(resultElement);
+                                    } else {
+                                        const errorElement = document.createElement("p");
+                                        resultContainer.appendChild(errorElement);
+                                    }
+                                }).catch(error => {
+                                    // 네트워크 오류 처리
+                                    const errorElement = document.createElement("p");
+                                    resultContainer.appendChild(errorElement);
+                                });
+
+                                promises.push(promise);
+                            }
+                        });
+
+                        // 모든 스크립트 실행이 완료되면 페이지를 이동
+                        Promise.all(promises).then(() => {
+                            window.location.href = '/hs/centoscheck/resolve';
+                        }).catch(error => {
+                            // 오류 처리
+                            console.error("스크립트 실행 중 오류 발생", error);
+                        });
+                    });
+                    
+                    document.body.appendChild(startActionButton);
+                }
+            </script>
+        </div>
+    </div>
 </body>
 </html>
-

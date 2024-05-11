@@ -3,132 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <title>CentOS 최종 점검 결과</title>
-    <link rel="stylesheet" type="text/css" href="/static/css/scriptstyle.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/ubuntu.css">
     <script src="/static/js/script.js"></script>
 </head>
+<div style=" margin-left: 5%; margin-top: 3%;">
+    <b class="title">서버, 서비스 점검 및 조치 자동화 시스템</b></br>
+    <b>해당 시스템은 서버 보안 가이드라인 기반의 서버 점검 및 조치와 서버 내 시스템 점검으로 진행됩니다.</b>
+</div>
+<br>
 <body>
-    <br>
-    <br>
-    <div id="load" style="display: flex; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.5); z-index: 1000;">
-        <img src="/static/css/103.gif" alt="loading" style="transform: translateX(0px); width: 170px; height: 30px;">
-    </div>    
-    <div id="resultContainer"></div>
-    <h1>☑️ CentOS 보안 설정 점검 결과☑️</h1>
-    <h4> ※ 선택된 항목 조치 완료 ※</h4>
-    <hr>
-    <script>
-        function showLoading() {
-            document.getElementById("load").style.display = "flex";
-        }
-    
-        function hideLoading() {
-            document.getElementById("load").style.display = "none";
-        }
-        showLoading();
-        document.addEventListener('DOMContentLoaded', function() {
-        const targetIp = localStorage.getItem("targetIp");
-        const targetPort = localStorage.getItem("targetPort");
-        const targetUser = localStorage.getItem("targetUser");
-        const targetPasswd = localStorage.getItem("targetPasswd");
-
-        const encodedIp = encodeURIComponent(targetIp);
-        const encodedPort = encodeURIComponent(targetPort);
-        const encodedUser = encodeURIComponent(targetUser);
-        const encodedPasswd = encodeURIComponent(targetPasswd);
-        
-        const baseUrl = "http://49.50.166.249:8000/hc/execute_script"; 
-        const queryParams = `?host=${targetIp}&port=${targetPort}&username=${targetUser}&password=${targetPasswd}&os_type=centos&script=check`;
-        const fullUrl = baseUrl + queryParams;
-        console.log("요청된 URL: ", fullUrl);
-
-        fetch(fullUrl)
-        .then(response => {
-            if (response.ok) {
-                return response.json();
+    <div style="text-align: center;">
+        <br>
+        <br>
+        <div id="load" style="display: flex; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.5); z-index: 1000;">
+            <img src="/static/css/103.gif" alt="loading" style="transform: translateX(0px); width: 170px; height: 30px;">
+        </div>    
+        <div id="resultContainer"></div>
+        <h1>☑️ CentOS 보안 설정 점검 결과☑️</h1>
+        <h4> ※ 선택된 항목 조치 완료 ※</h4>
+        <hr>
+        <script>
+            function showLoading() {
+                document.getElementById("load").style.display = "flex";
             }
-            throw new Error('Network response was not ok.');
-        })
-        .then(data => {
-            const checkedItems = localStorage.getItem('checkedItems');
-            displayData(data, checkedItems);
-            hideLoading();
-            createAndAppendButton();
-        })
-        .catch(error => {
-            console.error('An error occurred while fetching the data:', error);
-            hideLoading(); 
-        });
-    });
+        
+            function hideLoading() {
+                document.getElementById("load").style.display = "none";
+            }
+            showLoading();
+            document.addEventListener('DOMContentLoaded', function() {
+            const targetIp = localStorage.getItem("targetIp");
+            const targetPort = localStorage.getItem("targetPort");
+            const targetUser = localStorage.getItem("targetUser");
+            const targetPasswd = localStorage.getItem("targetPasswd");
 
-    function displayData(data, checkedItems) {
-        const checkedNumbers = checkedItems.match(/\d+/g).map(Number);
+            const encodedIp = encodeURIComponent(targetIp);
+            const encodedPort = encodeURIComponent(targetPort);
+            const encodedUser = encodeURIComponent(targetUser);
+            const encodedPasswd = encodeURIComponent(targetPasswd);
+            
+            const baseUrl = "http://49.50.166.249:8000/hc/execute_script"; 
+            const queryParams = `?host=${targetIp}&port=${targetPort}&username=${targetUser}&password=${targetPasswd}&os_type=centos&script=check`;
+            const fullUrl = baseUrl + queryParams;
+            console.log("요청된 URL: ", fullUrl);
 
-        const bodyContent = data.body;
-        // subsectionTitles 배열을 선언
-        const subsectionTitles = [];
-
-        bodyContent.forEach((section, index) => {
-            let sectionAdded = false;
-
-            section.content.forEach((subsection, index) => {
-                const subsectionNumber = subsection.subtitle.match(/\d+/g).map(Number)[0]; 
-
-                if (checkedNumbers.includes(subsectionNumber)) {
-                    // subsectionTitle을 subsectionTitles 배열에 추가
-                    subsectionTitles.push(subsection.subtitle);
-
-                    if (!sectionAdded) {
-                        if (document.body.lastChild.tagName !== 'HR') {
-                            document.body.appendChild(document.createElement('hr'));
-                        }
-
-                        const sectionTitle = document.createElement('h2');
-                        sectionTitle.textContent = section.title;
-                        sectionTitle.style.color = 'blue';
-                        document.body.appendChild(sectionTitle);
-                        sectionAdded = true;
-                    }
-
-                    const titleContainer = document.createElement('div');
-                    titleContainer.style.display = 'flex';
-                    titleContainer.style.justifyContent = 'center';
-
-                    const subsectionTitle = document.createElement('h3');
-                    subsectionTitle.textContent = subsection.subtitle;
-                    titleContainer.appendChild(subsectionTitle);
-                    document.body.appendChild(titleContainer);
-
-                    const resultList = document.createElement('ul');
-                    subsection.result.forEach(item => {
-                        const listItem = document.createElement('h5');
-                        listItem.innerHTML = item.replace(/\[안전\]/g, '<span style="color:green;">[안전]</span>')
-                                                    .replace(/\[취약\]/g, '<span style="color:red;">[취약]</span>')
-                                                    .replace(/\[수동조치권장\]/g, '<span style="color:hsl(60, 60%, 50%);">[수동조치권장]</span>');
-                        resultList.appendChild(listItem);
-                    });
-
-                    document.body.appendChild(resultList);
-                    document.body.appendChild(document.createElement('hr'));
-
+            fetch(fullUrl)
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
                 }
+                throw new Error('Network response was not ok.');
+            })
+            .then(data => {
+                const checkedItems = localStorage.getItem('checkedItems');
+                displayData(data, checkedItems);
+                hideLoading();
+                createAndAppendButton();
+            })
+            .catch(error => {
+                console.error('An error occurred while fetching the data:', error);
+                hideLoading(); 
             });
         });
-        localStorage.setItem("subsectionTitles", JSON.stringify(subsectionTitles));
-    }
-    function createAndAppendButton() {
-        const button = document.createElement('button');
-        button.id = 'dockerimageButton'; 
-        button.textContent = 'DockerImage 확인하기';
 
-        button.addEventListener('click', function() {
-            window.location.href = '/hs/dockerimage'; 
-        });
-        document.body.appendChild(button);
-        document.body.appendChild(document.createElement('br'));
-        document.body.appendChild(document.createElement('br'));
-        document.body.appendChild(document.createElement('br'));
-    }
-    </script>    
+        function displayData(data, checkedItems) {
+            const checkedNumbers = checkedItems.match(/\d+/g).map(Number);
+
+            const bodyContent = data.body;
+            // subsectionTitles 배열을 선언
+            const subsectionTitles = [];
+
+            bodyContent.forEach((section, index) => {
+                let sectionAdded = false;
+
+                section.content.forEach((subsection, index) => {
+                    const subsectionNumber = subsection.subtitle.match(/\d+/g).map(Number)[0]; 
+
+                    if (checkedNumbers.includes(subsectionNumber)) {
+                        // subsectionTitle을 subsectionTitles 배열에 추가
+                        subsectionTitles.push(subsection.subtitle);
+
+                        if (!sectionAdded) {
+                            if (document.body.lastChild.tagName !== 'HR') {
+                                document.body.appendChild(document.createElement('hr'));
+                            }
+
+                            const sectionTitle = document.createElement('h2');
+                            sectionTitle.textContent = section.title;
+                            sectionTitle.style.color = 'blue';
+                            document.body.appendChild(sectionTitle);
+                            sectionAdded = true;
+                        }
+
+                        const titleContainer = document.createElement('div');
+                        titleContainer.style.display = 'flex';
+                        titleContainer.style.justifyContent = 'center';
+
+
+                        const subsectionTitle = document.createElement('h3');
+                        subsectionTitle.textContent = subsection.subtitle;
+                        titleContainer.appendChild(subsectionTitle);
+                        document.body.appendChild(titleContainer);
+
+                        //subsectionTitles.push(subsection.subtitle);
+
+                        const resultList = document.createElement('ul');
+                        subsection.result.forEach(item => {
+                            const listItem = document.createElement('h5');
+                            listItem.innerHTML = item.replace(/\[안전\]/g, '<span style="color:green;">[안전]</span>')
+                                                        .replace(/\[취약\]/g, '<span style="color:red;">[취약]</span>')
+                                                        .replace(/\[수동조치권장\]/g, '<span style="color:hsl(60, 60%, 50%);">[수동조치권장]</span>');
+                            resultList.appendChild(listItem);
+                        });
+
+                        document.body.appendChild(resultList);
+                        document.body.appendChild(document.createElement('hr'));
+                        //localStorage.setItem("subsectionTitles", JSON.stringify(subsectionTitles));
+                        //console.log(subsectionTitle);
+                    }
+                });
+            });
+            localStorage.setItem("subsectionTitles", JSON.stringify(subsectionTitles));
+        }
+        function createAndAppendButton() {
+            const button = document.createElement('button');
+            button.id = 'dockerimageButton'; 
+            button.textContent = 'DockerImage 확인하기';
+
+            button.style.marginTop = '30px';
+            button.style.marginBottom = '30px';
+            button.style.marginLeft = 'calc(50% - 65px)'; // 버튼 너비의 절반을 빼줘야 중앙 정렬됩니다.
+            button.style.width = "130px";
+            button.style.height = "55px";
+            button.style.fontSize = "15px";
+            button.style.color = "white";
+            button.style.backgroundColor = "#635994";
+            button.style.borderColor = "white";
+            button.style.display = "block";
+
+            button.addEventListener('click', function() {
+                window.location.href = '/hs/dockerimage'; 
+            });
+            document.body.appendChild(button);
+            document.body.appendChild(document.createElement('br'));
+            document.body.appendChild(document.createElement('br'));
+            document.body.appendChild(document.createElement('br'));
+        }
+        </script>   
+    </div> 
 </body>
 </html>
 
