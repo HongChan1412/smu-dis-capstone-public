@@ -49,41 +49,41 @@ async def update_software_json():
     cpe_false_swname = software["CPE_False"]["swname"]
     cpe_false_swname_version = software["CPE_False"]["swname:version"]
     print("update_software_json")
-    while True:
-        re_cpe_false_swname = []
-        for swname in cpe_false_swname:
-            print(swname)
-            res = await search_cpe_swname(swname)
-            if res == "error":
-                re_cpe_false_swname.append(swname)
-            else:
-                if res:
-                    print(f"change_swname: {swname}")
-                    software["CPE_False"]["swname"].remove(swname)
-
-        if not re_cpe_false_swname:
-            break
+    # while True:
+    re_cpe_false_swname = []
+    for swname in cpe_false_swname:
+        print(swname)
+        res = await search_cpe_swname(swname)
+        if res == "error":
+            re_cpe_false_swname.append(swname)
         else:
-            print(f"re_cpe_false_swname: {re_cpe_false_swname}")
-            cpe_false_swname = re_cpe_false_swname
+            if res:
+                print(f"change_swname: {swname}")
+                software["CPE_False"]["swname"].remove(swname)
 
-    while True:
-        re_cpe_false_swname_version = []
-        for swname_version in cpe_false_swname_version:
-            print(swname_version)
-            res = await search_cpe_swname_version(swname_version)
-            if res["found_cpe"] == "error":
-                re_cpe_false_swname_version.append(swname)
-            else:
-                if res["found_cpe"]:
-                    print(f"change_swname_version: {swname_version}")
-                    software["CPE_True"].update({swname_version: res["cpe"]})
-                    software["CPE_False"]["swname:version"].remove(swname_version)
+        # if not re_cpe_false_swname:
+        #     break
+        # else:
+        #     print(f"re_cpe_false_swname: {re_cpe_false_swname}")
+        #     cpe_false_swname = re_cpe_false_swname
 
-        if not re_cpe_false_swname_version:
-            break
+    # while True:
+    re_cpe_false_swname_version = []
+    for swname_version in cpe_false_swname_version:
+        print(swname_version)
+        res = await search_cpe_swname_version(swname_version)
+        if res["found_cpe"] == "error":
+            re_cpe_false_swname_version.append(swname)
         else:
-            print(f"re_cpe_false_swname_version: {re_cpe_false_swname_version}")
+            if res["found_cpe"]:
+                print(f"change_swname_version: {swname_version}")
+                software["CPE_True"].update({swname_version: res["cpe"]})
+                software["CPE_False"]["swname:version"].remove(swname_version)
+
+        # if not re_cpe_false_swname_version:
+        #     break
+        # else:
+        #     print(f"re_cpe_false_swname_version: {re_cpe_false_swname_version}")
             cpe_false_swname_version = re_cpe_false_swname_version
 
     save_software(software)
