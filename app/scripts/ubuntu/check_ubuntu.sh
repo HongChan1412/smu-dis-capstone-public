@@ -154,6 +154,7 @@ echo \"result\": [
 echo \"root 홈 디렉터리 : `cat /etc/passwd | grep root | sed -n '1p' | awk -F: '{print $6}'`\",
 RDP1="dr-xr-x---"
 RDP2="dr-xr-x---."
+GRDP=`ls -ld /root | awk '{print $1}'`
 if [[ "$GRDP" == "$RDP1" || "$GRDP" == "$RDP2" ]]; then
     echo \"[안전] root 홈 디렉터리 권한 : $GRDP\",
 else
