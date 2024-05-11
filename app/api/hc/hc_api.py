@@ -12,7 +12,7 @@ import json
 from utils.ssh_utils import SSHSession, ssh_sessions, close_ssh_session, get_swdict_debian, get_swdict_redhat, run_remote_script, get_docker_image
 from utils.nvd_utils import check_cpe_exist, search_nvd_cve
 from utils.software_utils import load_software, save_software, update_software_json
-from utils.trivy_utils import check_docker_before, check_docker_after, create_dockerfile, prune_docker
+from utils.trivy_utils import check_docker_before, check_docker_after, prune_docker
 from config.config import SCRIPT_PATH
 
 hc = APIRouter()
@@ -177,7 +177,9 @@ async def get_docker(host: str, port: int, username: str, password: str):
 
         image_json_before = await check_docker_before(image)
         if image_json_before:
-            image_json_after = await check_docker_before(image)
+            if not image_json_before.get("Results"):
+                continue
+            image_json_after = await check_docker_after(image)
             if image_json_after:
                 result = {
                     "ImageName": image_json_after["ArtifactName"],
