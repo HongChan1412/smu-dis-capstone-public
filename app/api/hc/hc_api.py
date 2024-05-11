@@ -1,5 +1,6 @@
 import os
 import sys
+import os.path
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))))
 
 from fastapi import WebSocket, Request, WebSocketDisconnect, APIRouter
@@ -11,7 +12,7 @@ import json
 from utils.ssh_utils import SSHSession, ssh_sessions, close_ssh_session, get_swdict_debian, get_swdict_redhat, run_remote_script, get_docker_image
 from utils.nvd_utils import check_cpe_exist, search_nvd_cve
 from utils.software_utils import load_software, save_software, update_software_json
-from utils.trivy_utils import check_docker, create_dockerfile, prune_docker
+from utils.trivy_utils import check_docker_before, check_docker_after, create_dockerfile, prune_docker
 from config.config import SCRIPT_PATH
 
 hc = APIRouter()
@@ -173,21 +174,22 @@ async def get_docker(host: str, port: int, username: str, password: str):
     }
     for image in images:
         print(image)
-        cve_json = await check_docker(image)
-        if cve_json:
-            cve_re_json = await create_dockerfile(image)
-            if cve_re_json:
+
+        image_json_before = await check_docker_before(image)
+        if image_json_before:
+            image_json_after = await check_docker_before(image)
+            if image_json_after:
                 result = {
-                    "ImageName": cve_re_json["ArtifactName"],
-                    "before": len(cve_json["Results"][0]["Vulnerabilities"]),
-                    "after": len(cve_re_json["Results"][0].get("Vulnerabilities", [])),
+                    "ImageName": image_json_after["ArtifactName"],
+                    "before": len(image_json_before["Results"][0]["Vulnerabilities"]),
+                    "after": len(image_json_after["Results"][0].get("Vulnerabilities", [])),
                     "leftcve": []
                 }
                 for i in range(result["after"]):
                     data = {
-                        "Libarary Name": cve_re_json["Results"][0]["Vulnerabilities"][i]["PkgName"],
-                        "CVE": cve_re_json["Results"][0]["Vulnerabilities"][i]["VulnerabilityID"],
-                        "Severity": cve_re_json["Results"][0]["Vulnerabilities"][i]["Severity"]
+                        "Libarary Name": image_json_after["Results"][0]["Vulnerabilities"][i]["PkgName"],
+                        "CVE": image_json_after["Results"][0]["Vulnerabilities"][i]["VulnerabilityID"],
+                        "Severity": image_json_after["Results"][0]["Vulnerabilities"][i]["Severity"]
                     }
                     result["leftcve"].append(data)
                 results["dockerImage"][image] = result
