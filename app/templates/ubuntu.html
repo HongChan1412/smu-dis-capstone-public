@@ -1229,18 +1229,38 @@
     <hr>
     <br>
     <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const buttons = document.querySelectorAll("button");
-
-        buttons.forEach(function(button) {
-            button.addEventListener("click", function() {
-                const content = this.nextElementSibling;
-                const isHidden = content.style.display === "none";
-                content.style.display = isHidden ? "block" : "none";
+        document.addEventListener("DOMContentLoaded", function() {
+            // 모든 버튼에 대한 클릭 이벤트 리스너
+            const buttons = document.querySelectorAll("button");
+            buttons.forEach(function(button) {
+                button.addEventListener("click", function() {
+                    const content = this.nextElementSibling;
+                    const isHidden = content.style.display === "none";
+                    content.style.display = isHidden ? "block" : "none";
+                });
+            });
+        
+            // 점검 시작 버튼 선택
+            var button = document.getElementById('checkStartButton');
+        
+            // 스타일 속성 추가
+            button.style.marginTop = '30px';
+            button.style.marginBottom = '30px';
+            button.style.marginLeft = 'calc(50% - 65px)'; // 버튼 너비의 절반을 빼줘야 중앙 정렬됩니다.
+            button.style.width = "100px";
+            button.style.height = "40px";
+            button.style.fontSize = "15px";
+            button.style.color = "white";
+            button.style.backgroundColor = "#3399FF";
+            button.style.borderColor = "white";
+            button.style.display = "block";
+        
+            // 점검 시작 버튼에 대한 클릭 이벤트 리스너 추가
+            button.addEventListener('click', function() {
+                window.location.href = '/hs/ubuntucheck';
             });
         });
-    });
-    </script>
+        </script>
     <button id="checkStartButton">점검 시작</button>
     <script>
     document.getElementById('checkStartButton').addEventListener('click', function() {
