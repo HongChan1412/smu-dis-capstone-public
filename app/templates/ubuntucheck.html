@@ -80,7 +80,8 @@
             
                         const resultList = document.createElement('ul');
                         section.result.forEach(item => {
-                            const listItem = document.createElement('h5'); 
+                            const listItem = document.createElement('h4'); 
+                            listItem.style.textAlign="center";
                             listItem.textContent = item;
                             resultList.appendChild(listItem);
                         });
@@ -113,10 +114,11 @@
 
                             const resultList = document.createElement('ul');
                             subsection.result.forEach(item => {
-                                const listItem = document.createElement('h5'); 
+                                const listItem = document.createElement('h4'); 
+                                listItem.style.textAlign="center";
                                 listItem.innerHTML = item.replace(/\[안전\]/g, '<span style="color:green;">[안전]</span>')
                                                         .replace(/\[취약\]/g, '<span style="color:red;">[취약]</span>')
-                                                        .replace(/\[수동조치권장\]/g, '<span style="color:hsl(60, 60%, 50%);">[수동조치권장]</span>');
+                                                        .replace(/\[수동조치권장\]/g, '<span style="color:gold;">[수동조치권장]</span>');
                                 resultList.appendChild(listItem);
                             });
 
@@ -136,12 +138,14 @@
 
                         const footList = document.createElement('ul');
                         footContent.forEach(subtitle => {
-                            const listItem = document.createElement('h5');
+                            const listItem = document.createElement('h4');
+                            listItem.style.textAlign="center";
                             listItem.textContent = subtitle;
                             footList.appendChild(listItem);
                         });
                         document.body.appendChild(footList);
                         localStorage.setItem('footContent', JSON.stringify(footContent));
+                        //const vulnerableItemNumbers = footContent.map(item => item.match(/\d+/g)[0]);
                     }
                     document.body.appendChild(document.createElement('hr'));
 
@@ -149,82 +153,125 @@
                     tableTitle.textContent = '💡조치가 가능한 항목💡';
                     tableTitle.style.color = '#353535';
                     tableTitle.style.marginTop = "20px";
+                    document.body.appendChild(document.createElement('br'));
                     document.body.appendChild(tableTitle);
 
                     const table = document.createElement('table');
-                    table.style.width = '1200px';
-                    table.style.height = "60px"
+                    table.style.width = 'auto';
+                    table.style.height = "100px"
                     table.style.fontSize="15px";
-                    table.style.backgroundColor="#353535"
-                    table.cellSpacing = '0';
-                    table.style.borderCollapse = 'collapse';
-                
+                    table.style.backgroundColor="black"
+                    table.cellSpacing = '1';
+                    //table.style.borderCollapse = 'collapse';
+                    table.style.borderColor = "#000000";
+                     
                     const thead = document.createElement('thead');
                     const headerRow = document.createElement('tr');
                     const firstHeader = document.createElement('th');
                     
                     firstHeader.textContent = '항목';
+                    firstHeader.style.padding="10px;"
+                    headerRow.style.height="50px";
+                    headerRow.style.fontSize="16px";
+                    //thead.style.height="50px";
                     headerRow.appendChild(firstHeader);
-                    const headers = ['1번', '3번', '4번', '5번', '9번', '10번', '11번', '12번', '20번', '22번', '29번', '32번', '35번', '37번', '39번', '40번', '41번'];
-
-                    // 스크립트 경로 매핑
-                    const scriptPaths = {
-                        "1번": "r01",
-                        "3번": "r03",
-                        "4번": "r04",
-                        "5번": "r05",
-                        "9번": "r09",
-                        "10번": "r10",
-                        "11번": "r11",
-                        "12번": "r12",
-                        "20번": "r20",
-                        "22번": "r22",
-                        "29번": "r29",
-                        "32번": "r32",
-                        "35번": "r35",
-                        "37번": "r37",
-                        "39번": "r39",
-                        "40번": "r40",
-                        "41번": "r41",
-                    };
-
-                    headers.forEach(headerText => {
-                        const header = document.createElement('th');
-                        header.textContent = headerText;
-                        headerRow.appendChild(header);
-                    });
+                    thead.style.backgroundColor="#c3bde0";
                     thead.appendChild(headerRow);
                     table.appendChild(thead);
+
                     const tbody = document.createElement('tbody');
                     const bodyRow = document.createElement('tr');
                     const firstBodyCell = document.createElement('td');
                     firstBodyCell.textContent = '체크';
                     bodyRow.appendChild(firstBodyCell);
-                    headers.forEach(headerText => {
-                        const checkboxCell = document.createElement('td');
-                        const checkbox = document.createElement('input');
 
-                        checkbox.type = 'checkbox';
-                        checkbox.checked = true;
-                        checkbox.value = scriptPaths[headerText]; // 체크박스에 스크립트 경로를 값으로 저장
-                        checkbox.style.width="20px"
-                        checkbox.style.height="20px"
-                        checkboxCell.appendChild(checkbox);
-                        bodyRow.appendChild(checkboxCell);
+                    const headers = ['01', '03', '04', '05', '09', '10', '11', '12', '20', '22', '29', '32', '35', '37', '39', '40', '41'];
+
+                    // 스크립트 경로 매핑
+                    const scriptPaths = {
+                        "01": "r01", "03": "r03", "04": "r04",
+                        "05": "r05", "09": "r09", "10": "r10",
+                        "11": "r11", "12": "r12", "20": "r20",
+                        "22": "r22", "29": "r29", "32": "r32",
+                        "35": "r35", "37": "r37", "39": "r39",
+                        "40": "r40", "41": "r41",
+                    };
+                    const footNumbers = footContent.map(item => item.match(/\d+/)[0]);
+
+                    headers.forEach(headerText => {
+                        const headerNumber = headerText.match(/\d+/)[0]; // headers에서 숫자만 추출
+                        
+                        // footContent에 일치하는 번호가 있다면 테이블 헤더와 체크박스 추가
+                        if (footNumbers.includes(headerNumber)) {
+                            const header = document.createElement('th');
+                            header.textContent = headerText;                      
+                            headerRow.appendChild(header);
+                            
+                            const checkboxCell = document.createElement('td');
+                            const checkbox = document.createElement('input');
+                            checkbox.type = 'checkbox';
+                            checkbox.checked = true; // 일치하는 경우 체크박스를 체크된 상태로 설정
+                            checkbox.value = scriptPaths[headerText]; // 체크박스에 스크립트 경로를 값으로 저장
+                            checkbox.style.width="25px";
+                            checkbox.style.height="25px";
+                            
+                            checkboxCell.appendChild(checkbox);
+                            bodyRow.appendChild(checkboxCell);
+                        }
                     });
 
                     tbody.appendChild(bodyRow);
                     tbody.style.backgroundColor="white";
                     tbody.style.textAlign="center";
+
                     table.appendChild(tbody);
                     document.body.appendChild(table);
+                    // const footNumbers = footContent.map(item => item.match(/\d+/)[0]);
+                    // headers.forEach(headerText => {
+                    //     const header = document.createElement('th');
+                    //     header.textContent = headerText;                      
+                    //     headerRow.appendChild(header);
+                        
+                    // });
 
+                    // // thead.style.backgroundColor="#c3bde0";
+                    // // thead.appendChild(headerRow);
+                    // // table.appendChild(thead);
+                    // // const tbody = document.createElement('tbody');
+                    // // const bodyRow = document.createElement('tr');
+                    // // const firstBodyCell = document.createElement('td');
+                    // // firstBodyCell.textContent = '체크';
+                    // // bodyRow.appendChild(firstBodyCell);
+
+                    // headers.forEach(headerText => {
+                    //     const checkboxCell = document.createElement('td');
+                    //     const checkbox = document.createElement('input');
+                        
+                    //     checkbox.type = 'checkbox';
+                    //     checkbox.checked = true;
+                    //     checkbox.value = scriptPaths[headerText]; // 체크박스에 스크립트 경로를 값으로 저장
+                    //     checkbox.style.width="25px";
+                    //     checkbox.style.height="25px";
+                        
+                    //     checkboxCell.appendChild(checkbox);
+                    //     bodyRow.appendChild(checkboxCell);
+                        
+                    // });
+                    
+                    // tbody.appendChild(bodyRow);
+                    // tbody.style.backgroundColor="white";
+                    // tbody.style.textAlign="center";
+                    
+                    // table.appendChild(tbody);
+                    // document.body.appendChild(table);
+                    
                     function updateCheckedItems() {
                         let checkedValues = [];
 
                         document.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
+                            
                             if (checkbox.checked) {
-                                let valueWithoutR = checkbox.value.replace('r', '✓');
+                                let valueWithoutR = checkbox.value.replace('r', '🔑');
                                 checkedValues.push(valueWithoutR);
                             }
                         });
@@ -241,7 +288,7 @@
                         }
                         resultElement.textContent = `Check Number: ${checkedScripts}`;
                         resultElement.style.whiteSpace = "nowrap";
-                        resultElement.style.marginLeft = "150px";
+                        resultElement.style.textAlign="center";
                         resultElement.style.fontSize="17px";
                         resultElement.style.fontWeight="700";
                     }
@@ -256,12 +303,14 @@
                     startActionButton.textContent = '조치 시작';
                     startActionButton.style.marginTop = '30px';
                     startActionButton.style.marginBottom = '30px';
-                    startActionButton.style.marginLeft = '46%';
+                    startActionButton.style.marginLeft = '47%';
                     startActionButton.style.width="130px";
                     startActionButton.style.height="40px";
                     startActionButton.style.fontSize="15px";
-                    startActionButton.style.backgroundColor="#78befc";
-                    startActionButton.style.borderColor = "#78befc";
+                    startActionButton.style.color="white";
+                    startActionButton.style.backgroundColor="#635994";
+                    startActionButton.style.borderColor = "white";
+
                     startActionButton.addEventListener('click', function() {
                         showLoading();
                         const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
@@ -314,7 +363,7 @@
                             console.error("스크립트 실행 중 오류 발생", error);
                         });
                     });
-
+                    
                     document.body.appendChild(startActionButton);
                 }
             </script>

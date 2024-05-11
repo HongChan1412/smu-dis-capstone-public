@@ -23,8 +23,8 @@
         
         <div>            
             <div>
-                <div style ="display: flex; width: 70%;margin:auto;">
-                    <div class="join-wrapper">
+                <div style ="display: flex; width: 70%; margin:auto;">
+                    <div class="join-wrapper" id="serverInput">
                             <h2>서버정보 입력</h2>
                             <table>
                                 <tbody>
@@ -48,32 +48,33 @@
                                         <th> Password </th>
                                         <th> <input id="passwd" type="password" value="guest1412"> </th>
                                     </tr>
-                                </tbody> 
+                                </tbody>   
                             </table>
-                            <div style=" margin-left: 110px;">
+                            <div style=" margin-left: 210px;">
                                 <button id="connect">Connect</button>
                             </div>
                     </div>
-                    <div class="join-wrapper">
-                        <div style="width: 250px;">
+                    <div class="join-wrapper" style="display:none;" id="osSelection">
+                        <div >
                             <b id="choice_box">운영체제 선택</b>
                             </br>
                             </br>
                             <form id="checkboxForm">
-                            <input type="checkbox" id="option1" name="option" value="Ubuntu">
+                            <input type="checkbox" id="option1" name="option" value="Ubuntu" disabled>
                             <label for="option1">Ubuntu-18.04</label><br>
-                            <input type="checkbox" id="option2" name="option" value="CentOS">
+                            <input type="checkbox" id="option2" name="option" value="CentOS" disabled>
                             <label for="option2">CentOS-7.9</label><br>
                             </form> 
                             <p id="result"></p> 
-                            <button id="checkButton" style="margin-bottom: 20px; margin-left: 170px; ">점검 실행</button>
+                            <button id="checkButton" style="margin-bottom: 20px; margin-left: 230px;" disabled>점검 실행</button>
                         </div>
                     </div>
                 </div>
                 <br>
                 <div style="margin: auto; text-align:center;">
                     <b class="comm">점검 항목은 가이드라인를 기반한 서버 위반 사항, 서버 내 서비스, 도커 이미지를 대상으로 진행됩니다.</b><br>
-                    <b class="comm">서버 점검 결과는 PDF 형태로 다운 받을 수 있습니다..</b>
+                    <b class="comm">서버 점검 결과는 PDF 형태로 다운 받을 수 있습니다.</b><br>
+                    <b class="comm">점검 시간이 조금 걸릴 수 있습니다. 로딩 화면이 뜨면 잠시 기다려주세요.</b>
                 </div>
             </div>            
             <br>
@@ -84,30 +85,59 @@
         <b class="subj"> 1조 내일봬요누나 </b>         
     </div>
     <script>
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     document.getElementById('connect').addEventListener('click', function() {
+        //         // 서버 정보 입력 영역 숨기기
+        //         document.getElementById('serverInput').style.display = 'none';
+        //         // 운영체제 선택 영역 표시
+        //         document.getElementById('osSelection').style.display = 'flex';
+        //     });
+        // });
+
+        function enableButtons() { 
+            document.getElementById('connect').disabled = true;
+            document.getElementById('checkButton').disabled = false;
+            document.getElementById('option1').disabled = false;
+            document.getElementById('option2').disabled = false;
+            self.window.alert("서버 정보가 입력됐습니다.");
+        }
+
         document.getElementById("connect").addEventListener("click", function() {
-            // 입력 필드로부터 값을 가져옵니다.
             var name = document.getElementById("company").value;
             var ip = document.getElementById("ip").value;
             var port = document.getElementById("port").value;
             var user = document.getElementById("user").value;
             var password = document.getElementById("passwd").value;
-            
-            var encodedName = encodeURIComponent(name);
-            var encodedIp = encodeURIComponent(ip);
-            var encodedPort = encodeURIComponent(port);
-            var encodedUser = encodeURIComponent(user);
-            var encodedPassword = encodeURIComponent(password);
 
-            // 로컬 스토리지에 인코딩된 값을 저장합니다.
-            localStorage.setItem("targetCompany", encodedName);
-            localStorage.setItem("targetIp", encodedIp);
-            localStorage.setItem("targetPort", encodedPort);
-            localStorage.setItem("targetUser", encodedUser);
-            localStorage.setItem("targetPasswd", encodedPassword);
-            
-            // 저장 완료 알림을 표시합니다. (선택적)
-            alert("서버 정보가 입력되었습니다.");
+            if(company !== "" && ip !== "" && port !== "" && user !== "" && passwd !== "") {
+                // 서버 정보 입력 영역 숨기기
+                document.getElementById('serverInput').style.display = 'none';
+                // 운영체제 선택 영역 표시
+                document.getElementById('osSelection').style.display = 'flex';
+            } else {
+                // 필수 정보 입력 요청 알림
+                alert("모든 서버 정보를 입력해주세요.");
+            }
+            // 입력 필드로부터 값을 가져옵니다.
+            if (name && ip && port && user && password) {
+                var encodedName = encodeURIComponent(name);
+                var encodedIp = encodeURIComponent(ip);
+                var encodedPort = encodeURIComponent(port);
+                var encodedUser = encodeURIComponent(user);
+                var encodedPassword = encodeURIComponent(password);
+
+                // 로컬 스토리지에 인코딩된 값을 저장합니다.
+                localStorage.setItem("targetCompany", encodedName);
+                localStorage.setItem("targetIp", encodedIp);
+                localStorage.setItem("targetPort", encodedPort);
+                localStorage.setItem("targetUser", encodedUser);
+                localStorage.setItem("targetPasswd", encodedPassword);
+                enableButtons();
+                // 저장 완료 알림을 표시합니다. (선택적)
+                //alert("서버 정보가 입력되었습니다.");
+            }
         });
+        
         document.getElementById("checkButton").addEventListener("click", function() {
             var ubuntuCheckbox = document.getElementById("option1");
             var centOSCheckbox = document.getElementById("option2");
@@ -116,10 +146,10 @@
             if (ubuntuCheckbox.checked && centOSCheckbox.checked) {
                 resultText.textContent = "하나의 운영체제만 선택해주세요.";
             } else if (ubuntuCheckbox.checked) {
-                localStorage.setItem('selectedOS', 'Ubuntu-18.04'); // Ubuntu 선택 저장
+                localStorage.setItem('selectedOS', 'ubuntu'); // Ubuntu 선택 저장
                 window.location.href = "ubuntu"; // Ubuntu 페이지로 이동
             } else if (centOSCheckbox.checked) {
-                localStorage.setItem('selectedOS', 'CentOS-7.9'); // CentOS 선택 저장
+                localStorage.setItem('selectedOS', 'centos'); // CentOS 선택 저장
                 window.location.href = "centos"; // CentOS 페이지로 이동
             } else {
                 resultText.textContent = "운영체제를 선택해주세요.";
