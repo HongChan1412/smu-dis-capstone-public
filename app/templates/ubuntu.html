@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Ubuntu 보안 설정 점검</title>
     <link rel="stylesheet" type="text/css" href="/static/css/scriptstyle.css">
-    <script src="/static/js/script.js"></script>
+    <script src="/static\js\script.js"></script>
     
 </head>
 <div style=" margin-left: 5%; margin-top: 3%;">
@@ -1214,7 +1214,15 @@
     <hr>
     <h2>💡 취약한 Docker Image 점검 💡</h2>
     <hr>
-    <h5>설명 </h5>
+    <br>
+    <h3> 도커 이미지 내 패키지의 취약점을 점검하고 자동으로 조치 가능한 부분을 조치합니다.</h3><br>
+    <img src="/static/css/docker.png" style="height: 150px; width:200px; margin:50px;" /> <br>
+    <h4 style="font-size: 17px;margin-top: -15px;">1️⃣ 도커 이미지 점검은 기본적으로 Trivy를 통해 이미지 내 패키지를 대상으로 진행됩니다.</h4>
+    <h4 style="font-size: 17px;margin-top: -15px;"> 2️⃣ 도커 이미지 조치는 자동으로 Dockerfile을 제작해 생성된 이미지가 압축된 tar 파일 형태로 다운받을 수 있습니다.</h4>
+    <h4 style="font-size: 15px;margin-bottom: -10px; "> [DockerImage 자동 조치 내용] </h4>
+    <h4> 1. 취약 패키지의 업데이트 <br> 취약 패키지의 버전을 최신버전으로 업데이트하여 도커 이미지내에 존재하는 CVE 취약점을 줄입니다. </h4>
+    <h4> 2. 도커 컨테이너 실행 시 최소 권한 원칙 적용  <br>  보안을 위해 컨테이너의 root 권한으로의 실행을 막고 일반 사용자 계정 user의 권한을 부여합니다. </h4>
+    <h4 style="font-size: 17px; "> 점검 조치 후 본래 DockerImage에 대한 취약점에서 몇 개의 CVE가 해결되었는 지에 대한 결과와 조치 후 남아있는 CVE 중 위험도가 높은 CVE에 대한 정보가 PDF를 통해 제공됩니다. </h4>
 
 
     <br>

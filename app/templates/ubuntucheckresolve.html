@@ -130,6 +130,17 @@
             button.id = 'dockerimageButton'; 
             button.textContent = 'DockerImage 확인하기';
 
+            button.style.marginTop = '30px';
+            button.style.marginBottom = '30px';
+            button.style.marginLeft = 'calc(50% - 65px)'; // 버튼 너비의 절반을 빼줘야 중앙 정렬됩니다.
+            button.style.width = "130px";
+            button.style.height = "55px";
+            button.style.fontSize = "15px";
+            button.style.color = "white";
+            button.style.backgroundColor = "#635994";
+            button.style.borderColor = "white";
+            button.style.display = "block";
+
             button.addEventListener('click', function() {
                 window.location.href = '/hs/dockerimage'; 
             });

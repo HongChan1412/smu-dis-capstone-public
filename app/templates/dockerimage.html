@@ -12,17 +12,37 @@
 </div>
 <br>
 <body>
+    <div id="load" style="display: flex; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.5); z-index: 1000;">
+        <img src="/static/css/103.gif" alt="loading" style="transform: translateX(0px); width: 170px; height: 30px;">
+    </div> 
     <div style="text-align: center;">
         <h1>☑️ 취약한 DockerImage 점검☑️</h1>
+        <h3> 도커 이미지 점검 페이지입니다. </h3><br>
+        <h3> 클라이언트 서버에 있는 도커 이미지를 대상으로 점검 및 조치를 진행합니다. </h3>
+    </div>
+    <br>
+    <div style="text-align: center;">
+        <hr>
+        <h3> 클라이언트 서버에서 불러온 도커 이미지 목록 </h3>
         <hr>
     </div>
-    <br>
-    <br>
-    <div style="text-align: center;"><h5>~설명~</h5></div>
-    <div id="tableContainer"></div>
-    <div id="buttonContainer" style="text-align:center; margin-top:20px;">
+    <div style="text-align: center;">
+        <h4>클라이언트 서버에서 불러온 이미지를 바탕으로 생성된 이미지를 다운받아 사용할 수 있습니다.
+        <br>해당 이미지는 취약 패키지의 최신 버전 업데이트, 최소 권한 원칙을 적용한 도커파일을 바탕으로 생성되었습니다. <h4>
     </div>
+    <div id='tableContainer'></div>
+    <br>
+    <div id='tableContainer2'></div>
     <script>
+        function showLoading() {
+            document.getElementById("load").style.display = "flex";
+        }
+
+        function hideLoading() {
+            document.getElementById("load").style.display = "none";
+        }
+        //let docker ImageData = null;
+
         function createDockerTableFromJson(jsonData){
             // 기존 로컬 스토리지에서 값을 가져오는 코드 유지
             const targetIp = localStorage.getItem("targetIp");
@@ -49,7 +69,7 @@
                 headerCell1.textContent = 'No.';
                 let headerCell2 = document.createElement('th');
                 headerCell2.textContent = 'ImageName';
-                let headerCell3 = document.createElement('th'); 
+                let headerCell3 = document.createElement('th');
                 headerCell3.textContent = 'Modified tar';
                 headerRow.appendChild(headerCell1);
                 headerRow.appendChild(headerCell2);
@@ -76,36 +96,122 @@
                         cell3.appendChild(button); // 셀에 버튼 추가
                     }
                 }
+                // 'tableContainer' 요소 존재 확인
+                const container = document.getElementById('tableContainer');
+                if (container) {
+                    container.innerHTML = ''; // 컨테이너를 비우고 테이블 추가
+                    container.appendChild(table);
+                } else {
+                    console.error('tableContainer element not found');
+                }
+                // hideLoading 함수 호출 여부 확인 필요
+                hideLoading();
                 document.getElementById('tableContainer').appendChild(table);
             })
+            // .then(data => {
+            //     button.textContent = 'JSON Download';
+            //     button.onclick = function() {
+            //         const jsonStr = JSON.stringify(data.dockerImage, null, 2);
+            //         const blob = new Blob([jsonStr], {type: "application/json"});
+            //         const url = URL.createObjectURL(blob);
+            //         const a = document.createElement("a");
+            //         a.href = url;
+            //         a.download = `dockerImageVuln.json`;
+            //         document.body.appendChild(a);
+            //         a.click();
+            //         document.body.removeChild(a);
+            //     }
+            // })
             .catch(error => console.error('Error loading the JSON file:', error));
 
+            document.body.appendChild(document.createElement('br'));
+            document.body.appendChild(document.createElement('br'));
+        } 
+    </script>
+    <br>
+    <hr>
+    <div style="text-align: center;">
+        <h4 style="font-size: 17px; "> 해당 이미지에 대한 점검 및 조치 결과는 전체 결과 보고서 PDF를 통해 확인할 수 있습니다.</h4>
+        <h4 style = "margin-bottom: -10px;">[PDF로 확인할 수 있는 점검 결과] </h4>
+        <h4> 
+            1. 조치 전 이미지가 가진 CVE의 수 <br> 
+            2. 조치 후 생성된 이미지를 대상으로 다시 스캔된 CVE의 개수 <br>
+            3. 생성된 이미지에 남아있는 취약점 중 위험도가 High 이상인 CVE 목록 </h4>
+        <h4> </h4>
+    </div>
+    <hr>
+    <div id="tableContainer"></div>
+    <div id="buttonContainer2" style="text-align:center; margin-top:20px;">
+    <div id="buttonContainer" style="text-align:center; margin-top:20px;">
+    </div>
+    <script>
+        function createlastButton2() {
+            const button2 = document.createElement('button');
+            button2.id = 'jsonDownload'; 
+            button2.textContent = 'DockerImage.json';
+            button2.style.margin = 'auto'; 
+            button2.style.display = 'block';
+
+            button2.style.marginTop = '10px';
+            button2.style.marginBottom = '10px';
+            // marginLeft 및 marginRight 삭제
+            button2.style.width = "180px";
+            button2.style.height = "30px";
+            button2.style.fontSize = "15px";
+            button2.style.color = "white";
+            button2.style.backgroundColor = "#635994";
+            button2.style.borderColor = "white";
+
+            button2.addEventListener('click', function() {
+                if (!dockerImageData) {
+                    alert('데이터가 없습니다.');
+                    return;
+                }
+                const jsonStr = JSON.stringify(dockerImageData, null, 2);
+                const blob = new Blob([jsonStr], {type: "application/json"});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `dockerImageVuln.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            });
+            document.getElementById('buttonContainer2').appendChild(button2);
+        }
+        function createlastButton() {
+            const button = document.createElement('button'); // 'button2'를 'button'으로 올바르게 수정했습니다.
+            button.id = 'reportButton'; 
+            button.textContent = '최종 전체 결과 보고서';
+            button.style.margin = 'auto'; 
+            button.style.display = 'block';
+
+            button.style.marginTop = '10px';
+            button.style.marginBottom = '10px';
+            // marginLeft 및 marginRight 삭제
+            button.style.width = "180px";
+            button.style.height = "30px";
+            button.style.fontSize = "15px";
+            button.style.color = "white";
+            button.style.backgroundColor = "#635994";
+            button.style.borderColor = "white";
+
+            button.addEventListener('click', function() {
+                window.location.href = '/hs/report'; 
+            });
+            document.getElementById('buttonContainer2').appendChild(button);
+            document.body.appendChild(document.createElement('br'));
             document.body.appendChild(document.createElement('br'));
             document.body.appendChild(document.createElement('br'));
         }
 
 
-            function createlastButton() {
-                const button = document.createElement('button');
-                button.id = 'reportButton'; 
-                button.textContent = '최종 전체 결과 보고서';
-                button.style.margin = 'auto'; 
-                button.style.display = 'block';
-
-                button.addEventListener('click', function() {
-                    window.location.href = '/hs/report'; 
-                });
-                document.getElementById('buttonContainer').appendChild(button);
-                document.body.appendChild(document.createElement('br'));
-                document.body.appendChild(document.createElement('br'));
-                document.body.appendChild(document.createElement('br'));
-            }
-
-            window.onload = function() {
-                createDockerTableFromJson();
-                createlastButton();
-            };
+        window.onload = function() {
+            createDockerTableFromJson();
+            createlastButton2();
+            createlastButton();
+        };
     </script>
+
 </body>
 </html>
-
