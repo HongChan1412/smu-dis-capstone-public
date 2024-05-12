@@ -79,6 +79,7 @@
                         document.body.appendChild(sectionTitle);
             
                         const resultList = document.createElement('ul');
+                        resultList.style.paddingLeft = "0";
                         section.result.forEach(item => {
                             const listItem = document.createElement('h4'); 
                             listItem.style.textAlign="center";
@@ -113,6 +114,7 @@
                             document.body.appendChild(titleContainer);
 
                             const resultList = document.createElement('ul');
+                            resultList.style.paddingLeft = "0";
                             subsection.result.forEach(item => {
                                 const listItem = document.createElement('h4'); 
                                 listItem.style.textAlign="center";
@@ -137,6 +139,7 @@
                         document.body.appendChild(footTitle);
 
                         const footList = document.createElement('ul');
+                        footList.style.paddingLeft = "0";
                         footContent.forEach(subtitle => {
                             const listItem = document.createElement('h4');
                             listItem.style.textAlign="center";
@@ -303,7 +306,7 @@
                     startActionButton.textContent = '조치 시작';
                     startActionButton.style.marginTop = '30px';
                     startActionButton.style.marginBottom = '30px';
-                    startActionButton.style.marginLeft = '47%';
+                    startActionButton.style.marginLeft = 'calc(50% - 65px)';
                     startActionButton.style.width="130px";
                     startActionButton.style.height="40px";
                     startActionButton.style.fontSize="15px";

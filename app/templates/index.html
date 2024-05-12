@@ -120,14 +120,13 @@
             }
             // 입력 필드로부터 값을 가져옵니다.
             if (name && ip && port && user && password) {
-                var encodedName = encodeURIComponent(name);
                 var encodedIp = encodeURIComponent(ip);
                 var encodedPort = encodeURIComponent(port);
                 var encodedUser = encodeURIComponent(user);
                 var encodedPassword = encodeURIComponent(password);
 
                 // 로컬 스토리지에 인코딩된 값을 저장합니다.
-                localStorage.setItem("targetCompany", encodedName);
+                localStorage.setItem("targetCompany", name);
                 localStorage.setItem("targetIp", encodedIp);
                 localStorage.setItem("targetPort", encodedPort);
                 localStorage.setItem("targetUser", encodedUser);
@@ -146,10 +145,12 @@
             if (ubuntuCheckbox.checked && centOSCheckbox.checked) {
                 resultText.textContent = "하나의 운영체제만 선택해주세요.";
             } else if (ubuntuCheckbox.checked) {
-                localStorage.setItem('selectedOS', 'ubuntu'); // Ubuntu 선택 저장
+                localStorage.setItem('selectedOS', 'Ubuntu-18.04'); // Ubuntu 선택 저장
+                localStorage.setItem('OS', 'ubuntu');
                 window.location.href = "ubuntu"; // Ubuntu 페이지로 이동
             } else if (centOSCheckbox.checked) {
-                localStorage.setItem('selectedOS', 'centos'); // CentOS 선택 저장
+                localStorage.setItem('selectedOS', 'CentOS-7.9'); // CentOS 선택 저장
+                localStorage.setItem('OS', 'centos');
                 window.location.href = "centos"; // CentOS 페이지로 이동
             } else {
                 resultText.textContent = "운영체제를 선택해주세요.";
