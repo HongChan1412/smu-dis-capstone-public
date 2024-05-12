@@ -96,6 +96,8 @@ async def run_remote_script(host: str, port: int, username: str, password: str, 
             script_content = file.read()
     try:
         async with asyncssh.connect(host, port=port, username=username, password=password, known_hosts=None) as conn:
+            if script_path == "./scripts/common/restore_sudoers.sh":
+                script_content = f"sudo {script_path}"
             result = await conn.run(script_content, check=True)
             print(result.stdout, end='')
             return result.stdout
