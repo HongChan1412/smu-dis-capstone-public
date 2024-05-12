@@ -852,7 +852,7 @@ if [ "$AI" ]; then
     if [ "$UP" != "root" ]; then
         echo \"[안전] 현재 설정된 웹 프로세스 User 권한 : $UP\",
     else
-        echo \"[취약]\033[0m 현재 설정된 웹 프로세스 User 권한 : $UP\",
+        echo \"[취약] 현재 설정된 웹 프로세스 User 권한 : $UP\",
     fi
 
     if [ "$GP" != "root" ]; then
