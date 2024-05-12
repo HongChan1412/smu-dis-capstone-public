@@ -151,56 +151,60 @@
                         </tr>
                     </table>
                     <br>
-                    <a href="https://nvd.nist.gov/vuln/search" target="_blank"><strong>https://nvd.nist.gov/vuln/search</strong></a>에서 CVE ID를 검색하여 자세한 정보를 찾아보십시오.
+                    <a href="https://nvd.nist.gov/vuln/search" target="_blank"><strong>https://nvd.nist.gov/vuln/search</strong></a>에서 CVE ID를 검색하여 자세한 정보를 찾아보십시오.<br>
+                    PDF 변환 시, 내용이 잘리는 것이 아닌 페이지 아랫부분이 다음 페이지의 윗부분과 중복되어 나타납니다.<br>
+                    내용 출력엔 문제가 없으니 양해 바랍니다.
+                    <br> 
                 </div>
                 
             </div>
             <br>
+        </div>
+        <div id="buttonContainer" style="text-align: center; ">
             <button onclick="downloadPDF()">PDF로 변환</button><br><br>
-            <script>
-                async function downloadPDF() {
-                    var button = document.getElementById('PDFButton');
-
-                    const { jsPDF } = window.jspdf;
-                    const element = document.getElementById('convert-to-convert'); // PDF로 변환할 HTML 요소의 ID
-            
-                    const canvas = await html2canvas(element, {
-                        scale: 2 // 이미지 품질 조정
-                    });
-                    const imgData = canvas.toDataURL('image/png');
-            
-                    const margin = {
-                        top: 10,
-                        left: 20,
-                        bottom: 10 // 하단 여백 추가
-                    };
-            
-                    const pageWidth = 210 - margin.left * 2; // 좌우 여백 고려
-                    const pageHeight = 297 - margin.top - margin.bottom; // 상하 여백 고려
-                    let imgHeight = canvas.height * pageWidth / canvas.width;
-                    let heightLeft = imgHeight;
-            
-                    const doc = new jsPDF('p', 'mm');
-                    let position = margin.top;
-            
-                    if (heightLeft <= pageHeight) {
+        </div>      
+        <script>
+            async function downloadPDF() {
+                const { jsPDF } = window.jspdf;
+                const element = document.getElementById('convert-to-convert'); // PDF로 변환할 HTML 요소의 ID
+        
+                const canvas = await html2canvas(element, {
+                    scale: 2 // 이미지 품질 조정
+                });
+                const imgData = canvas.toDataURL('image/png');
+        
+                const margin = {
+                    top: 10,
+                    left: 20,
+                    bottom: 10 // 하단 여백 추가
+                };
+        
+                const pageWidth = 210 - margin.left * 2; // 좌우 여백 고려
+                const pageHeight = 297 - margin.top - margin.bottom; // 상하 여백 고려
+                let imgHeight = canvas.height * pageWidth / canvas.width;
+                let heightLeft = imgHeight;
+        
+                const doc = new jsPDF('p', 'mm');
+                let position = margin.top;
+        
+                if (heightLeft <= pageHeight) {
+                    doc.addImage(imgData, 'PNG', margin.left, position, pageWidth, imgHeight);
+                } else {
+                    while (heightLeft >= 0) {
                         doc.addImage(imgData, 'PNG', margin.left, position, pageWidth, imgHeight);
-                    } else {
-                        while (heightLeft >= 0) {
-                            doc.addImage(imgData, 'PNG', margin.left, position, pageWidth, imgHeight);
-                            heightLeft -= pageHeight;
-            
-                            if (heightLeft > 0) {
-                                doc.addPage();
-                                // 페이지를 추가할 때마다 position을 다시 상단 여백으로 설정하고, heightLeft에서 페이지 높이를 뺍니다.
-                                position = margin.top - imgHeight + heightLeft + margin.bottom; // 페이지 추가 시 하단 여백 고려
-                            }
+                        heightLeft -= pageHeight;
+        
+                        if (heightLeft > 0) {
+                            doc.addPage();
+                            // 페이지를 추가할 때마다 position을 다시 상단 여백으로 설정하고, heightLeft에서 페이지 높이를 뺍니다.
+                            position = margin.top - imgHeight + heightLeft + margin.bottom; // 페이지 추가 시 하단 여백 고려
                         }
                     }
-            
-                    doc.save('점검조치보고서.pdf');
                 }
-            </script>
+        
+                doc.save('점검조치보고서.pdf');
+            }
+        </script>
             <script>
                 // 홍찬선배 url
                 // const fullUrl = "http://49.50.166.249:8000/hc/swdict/?hostname=101.101.211.69&port=22&username=root&password=captest%21&os_type=ubuntu&save=false";
