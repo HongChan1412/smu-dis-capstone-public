@@ -1,18 +1,5 @@
 <!DOCTYPE html>
 <html>
-    <!-- <div id="load" style="display: flex; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.5); z-index: 1000;">
-        <img src="/static/css/103.gif" alt="loading" style="transform: translateX(0px); width: 170px; height: 30px;">
-    </div>
-    <script>
-        function showLoading() {
-            document.getElementById("load").style.display = "flex";
-        }
-    
-        function hideLoading() {
-            document.getElementById("load").style.display = "none";
-        }
-        showLoading();
-    </script> -->
     <head>
         <div id="load" style="display: flex; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.5); z-index: 1000;">
             <img src="/static/css/103.gif" alt="loading" style="transform: translateX(0px); width: 170px; height: 30px;">
@@ -131,12 +118,16 @@
                     </table>
                     <table id="outer_docker">
                         <tr>
-                            <td>도커 이미지 점검 및 조치 결과입니다.
-                                이미지 조치는 패키지 업데이트를 통해 해결 가능한 CVE를 최소화하였으며,
-                                도커 컨테이너의 보안 사항을 위해 root 권한 부여를 제한되어있습니다.<br>
-                                제한된 root 권한 대신 일반 사용자 user의 최소 권한으로 컨테이너가 실행됩니다.
-                                하지만 조치된 이미지인 경우에도 해결 불가한 CVE를 가진 패키지가 다수 발견된다면
-                                최신 버전의 도커 이미지 사용을 권장합니다.
+                            <td>도커 이미지 점검 및 조치 결과입니다. <br>
+                                 도커 이미지에 대한 CVE 취약점 조치는 도커 이미지 내 패키지 업데이트를 통해 취약 버전의 패키지 사용을 줄여 도커 
+                                 이미지 내 조치 가능한 CVE를 최소화합니다. 
+                                 패키지 업데이트 시 영향이 있거나 아직 해결 불가한 CVE 는 조치 후에도 남아있을 수 있습니다. <br> 
+                                 또한 도커 이미지사용에 대한 보안 사항으로 최소 권한 원칙을 적용하기 위해 컨테이너에 대한 root 
+                                 권한 실행이 제한되었습니다. 제한된 root 권한 대신 일반 사용자의 user의 최소 권한으로 컨테이너가 실행되며, 작업 디렉터리는 
+                                 /app으로 설정되어 있습니다. <br> 
+                                 하지만 이런 조치 후에도 CVE를 가진 패키지가 다수 남아있다면 다른 버전의 도커 이미지 사용을 권장합니다.<br> 
+                                 아래 표에 이미지에 조치 전, 후 취약 CVE 개수, 남아있는 CVE 중 위험도나 High 이상인 CVE에 대한 목록에 대한 정보를 담고 
+                                 있습니다. 
                                 <br><br><div id="dockertableContainer"></div></td>
                         </tr>
                     </table>
@@ -145,12 +136,16 @@
                 <div>
                     <table id="package_diff" border="1">
                         <tr>
-                            <td style="text-align: center;">패키지 변경 사항</td>
+                            <td style="text-align: center;">취약한 SW Package 결과</td>
                         </tr>
                     </table>
                     <table id="outer_pkgtable">
                         <tr>
-                            <td>
+                            <td>NVD API를 사용한 서버에서 사용되는 패키지중 취약한 패키지 점검 결과입니다.<br>
+                                패키지 업데이트 과정에서 발생할 수 있는 서버의 재시작, 패키지 종속성 문제에 대한 우려가 있기 때문에 직접적으로 수정하거나 업데이트하지 않습니다.<br>
+                                시스템  환경에서는 설치된 다른 패키지들, 시스템 설정, 운영체제 버전 등 다양한 요소들이 취약점 발생 여부에 영향을 미칠 수 있기때문에 구체적인 시스템 환경과 요구 사항을 고려하여 적절하게 조치하셔야합니다.<br>
+                                패키지 업데이트는 Ubuntu의 경우  apt를 사용해서 업데이트 할 수 있습니다. APT로 업데이트 하지 못하는 경우 PPA저장소, Github을 사용해서 업데이트 할 수 있습니다.<br>
+                                CentOs의 경우 YUM, dnf로 업데이트 할 수 있습니다. 기본 저장소에서 제공하지 않는 패키지의 경우 EPEL, Remi저장소를 사용해 패키지 업데이트를 진행할 수 있습니다.<br><br>
                                 <div id="pkgtableContainer"></div>
                             </td>
                         </tr>
@@ -160,6 +155,52 @@
                 </div>
                 
             </div>
+            <br>
+            <button onclick="downloadPDF()">PDF로 변환</button><br><br>
+            <script>
+                async function downloadPDF() {
+                    var button = document.getElementById('PDFButton');
+
+                    const { jsPDF } = window.jspdf;
+                    const element = document.getElementById('convert-to-convert'); // PDF로 변환할 HTML 요소의 ID
+            
+                    const canvas = await html2canvas(element, {
+                        scale: 2 // 이미지 품질 조정
+                    });
+                    const imgData = canvas.toDataURL('image/png');
+            
+                    const margin = {
+                        top: 10,
+                        left: 20,
+                        bottom: 10 // 하단 여백 추가
+                    };
+            
+                    const pageWidth = 210 - margin.left * 2; // 좌우 여백 고려
+                    const pageHeight = 297 - margin.top - margin.bottom; // 상하 여백 고려
+                    let imgHeight = canvas.height * pageWidth / canvas.width;
+                    let heightLeft = imgHeight;
+            
+                    const doc = new jsPDF('p', 'mm');
+                    let position = margin.top;
+            
+                    if (heightLeft <= pageHeight) {
+                        doc.addImage(imgData, 'PNG', margin.left, position, pageWidth, imgHeight);
+                    } else {
+                        while (heightLeft >= 0) {
+                            doc.addImage(imgData, 'PNG', margin.left, position, pageWidth, imgHeight);
+                            heightLeft -= pageHeight;
+            
+                            if (heightLeft > 0) {
+                                doc.addPage();
+                                // 페이지를 추가할 때마다 position을 다시 상단 여백으로 설정하고, heightLeft에서 페이지 높이를 뺍니다.
+                                position = margin.top - imgHeight + heightLeft + margin.bottom; // 페이지 추가 시 하단 여백 고려
+                            }
+                        }
+                    }
+            
+                    doc.save('점검조치보고서.pdf');
+                }
+            </script>
             <script>
                 // 홍찬선배 url
                 // const fullUrl = "http://49.50.166.249:8000/hc/swdict/?hostname=101.101.211.69&port=22&username=root&password=captest%21&os_type=ubuntu&save=false";
@@ -167,7 +208,7 @@
                 const targetPort = localStorage.getItem("targetPort");
                 const targetUser = localStorage.getItem("targetUser");
                 const targetPasswd = localStorage.getItem("targetPasswd");
-                const selectedOS = localStorage.getItem("selectedOS");
+                const OS = localStorage.getItem("OS");
 
                 const encodedIp = encodeURIComponent(targetIp);
                 const encodedPort = encodeURIComponent(targetPort);
@@ -175,7 +216,7 @@
                 const encodedPasswd = encodeURIComponent(targetPasswd);
                 
                 const baseUrl = "http://49.50.166.249:8000/hc/swdict/"; 
-                const queryParams = `?hostname=${targetIp}&port=${targetPort}&username=${targetUser}&password=${targetPasswd}&os_type=${selectedOS}&save=false`;
+                const queryParams = `?hostname=${targetIp}&port=${targetPort}&username=${targetUser}&password=${targetPasswd}&os_type=${OS}&save=false`;
                 const fullUrl = baseUrl + queryParams;
                 console.log("swdict URL: ", fullUrl);
 
@@ -322,7 +363,7 @@
                     
                         // "leftcve"에 대한 헤더 생성 없이 바로 "Library Name", "CVE", "Severity" 헤더 추가
                         let leftcveTh = document.createElement('th');
-                        leftcveTh.innerHTML = 'leftcve';
+                        leftcveTh.innerHTML = 'leftcve(only critical and high)';
                         leftcveTh.setAttribute('colspan','3')
                         tr.appendChild(leftcveTh); // 첫 번째 행에 "leftcve" 추가
                         
@@ -454,13 +495,12 @@
                         // 필요한 모든 URL과 파라미터 세팅
                         const swdictBaseUrl = "http://49.50.166.249:8000/hc/swdict/";
                         const dockerBaseUrl = "http://49.50.166.249:8000/hc/dockers";
-                        const swdictQueryParams = `?hostname=${targetIp}&port=${targetPort}&username=${targetUser}&password=${targetPasswd}&os_type=${selectedOS}&save=false`;
+                        const swdictQueryParams = `?hostname=${targetIp}&port=${targetPort}&username=${targetUser}&password=${targetPasswd}&os_type=${OS}&save=false`;
                         const dockerQueryParams = `?host=${targetIp}&port=${targetPort}&username=${targetUser}&password=${targetPasswd}`;
                         
                         const swdictFullUrl = swdictBaseUrl + swdictQueryParams;
                         const dockerFullUrl = dockerBaseUrl + dockerQueryParams;
 
-                        // 비동기 작업을 배열로 관리하여 Promise.all로 처리
                         await Promise.all([
                             fetch(swdictFullUrl).then(response => {
                                 if (!response.ok) throw new Error('swdict 네트워크 응답이 올바르지 않습니다.');
@@ -475,12 +515,9 @@
                                 createDockerTableFromJson(jsonData);
                             })
                         ]);
-
-                        // 모든 비동기 작업이 완료된 후 로딩 화면 숨김
                         hideLoading();
                     } catch (error) {
                         console.error('데이터를 불러오는 중 오류가 발생했습니다:', error);
-                        // 오류 발생 시에도 로딩 화면 숨김 처리가 필요할 수 있음
                         hideLoading();
                     }
                 };

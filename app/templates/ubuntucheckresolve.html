@@ -108,8 +108,13 @@
                         //subsectionTitles.push(subsection.subtitle);
 
                         const resultList = document.createElement('ul');
+                        resultList.style.display = "flex";
+                        resultList.style.flexDirection = "column";
+                        resultList.style.alignItems = "center";
+                        resultList.style.paddingLeft = "0";
+                        
                         subsection.result.forEach(item => {
-                            const listItem = document.createElement('h5');
+                            const listItem = document.createElement('h4');
                             listItem.innerHTML = item.replace(/\[안전\]/g, '<span style="color:green;">[안전]</span>')
                                                         .replace(/\[취약\]/g, '<span style="color:red;">[취약]</span>')
                                                         .replace(/\[수동조치권장\]/g, '<span style="color:hsl(60, 60%, 50%);">[수동조치권장]</span>');

@@ -79,6 +79,7 @@
                         document.body.appendChild(sectionTitle);
             
                         const resultList = document.createElement('ul');
+                        resultList.style.paddingLeft = "0";
                         section.result.forEach(item => {
                             const listItem = document.createElement('h4'); 
                             listItem.style.textAlign="center";
@@ -113,6 +114,7 @@
                             document.body.appendChild(titleContainer);
 
                             const resultList = document.createElement('ul');
+                            resultList.style.paddingLeft = "0";
                             subsection.result.forEach(item => {
                                 const listItem = document.createElement('h4'); 
                                 listItem.style.textAlign="center";
@@ -137,6 +139,7 @@
                         document.body.appendChild(footTitle);
 
                         const footList = document.createElement('ul');
+                        footList.style.paddingLeft = "0";
                         footContent.forEach(subtitle => {
                             const listItem = document.createElement('h4');
                             listItem.style.textAlign="center";
@@ -185,15 +188,14 @@
                     firstBodyCell.textContent = '체크';
                     bodyRow.appendChild(firstBodyCell);
 
-                    const headers = ['01', '03', '04', '05', '09', '10', '11', '12', '20', '22', '29', '32', '35', '37', '39', '40', '41'];
+                    const headers = ['01', '05', '06', '10', '12', '17', '19', '22', '29', '32', '35', '36', '40', '41'];
 
                     // 스크립트 경로 매핑
                     const scriptPaths = {
-                        "01": "r01", "03": "r03", "04": "r04",
-                        "05": "r05", "09": "r09", "10": "r10",
-                        "11": "r11", "12": "r12", "20": "r20",
-                        "22": "r22", "29": "r29", "32": "r32",
-                        "35": "r35", "37": "r37", "39": "r39",
+                        "01": "r01", "05": "r05", "06": "r06",
+                        "10": "r10", "12": "r12", "17": "r17",
+                        "19": "r19", "22": "r22", "29": "r29",
+                        "32": "r32", "35": "r35", "36": "r36",
                         "40": "r40", "41": "r41",
                     };
                     const footNumbers = footContent.map(item => item.match(/\d+/)[0]);
@@ -303,7 +305,7 @@
                     startActionButton.textContent = '조치 시작';
                     startActionButton.style.marginTop = '30px';
                     startActionButton.style.marginBottom = '30px';
-                    startActionButton.style.marginLeft = '47%';
+                    startActionButton.style.marginLeft = 'calc(50% - 65px)';
                     startActionButton.style.width="130px";
                     startActionButton.style.height="40px";
                     startActionButton.style.fontSize="15px";
