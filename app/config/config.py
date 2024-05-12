@@ -40,5 +40,9 @@ SCRIPT_PATH = {
         "r36": "./scripts/centos/resolve_centos_36.sh",
         "r40": "./scripts/centos/resolve_centos_40.sh",
         "r41": "./scripts/centos/resolve_centos_41.sh",
+    },
+    "common": {
+        "add": "./scripts/common/add_sudoers.sh",
+        "restore": "./scripts/common/restore_sudoers.sh"
     }
 }

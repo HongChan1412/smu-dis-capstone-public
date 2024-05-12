@@ -151,9 +151,9 @@ async def get_nvd(swname: str):
 
 
 @hc.get("/execute_script")
-async def execute_script(host: str, port: int, username: str, password: str, os_type: str, script: str):
+async def execute_script(host: str, port: int, username: str, password: str, os_type: str, script: str, user: str | None = None):
     script_path = SCRIPT_PATH[os_type][script]
-    result = await run_remote_script(host, port, username, password, script_path)
+    result = await run_remote_script(host, port, username, password, script_path, user)
     if script == "check":
         result = json.loads(result)
         result["foot"] = [content["subtitle"]
