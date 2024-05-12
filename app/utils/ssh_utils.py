@@ -88,9 +88,12 @@ async def get_docker_image(host: str, port: int, username: str, password: str):
         return str(e)
 
 
-async def run_remote_script(host: str, port: int, username: str, password: str, script_path: str):
+async def run_remote_script(host: str, port: int, username: str, password: str, script_path: str, user: str | None = None):
     with open(script_path, "r", encoding="utf-8") as file:
-        script_content = file.read()
+        if user:
+            script_content = file.read().format(**{"USERNAME": user})
+        else:
+            script_content = file.read()
     try:
         async with asyncssh.connect(host, port=port, username=username, password=password, known_hosts=None) as conn:
             result = await conn.run(script_content, check=True)
@@ -98,3 +101,5 @@ async def run_remote_script(host: str, port: int, username: str, password: str, 
             return result.stdout
     except (OSError, asyncssh.Error) as e:
         print(f"SSH connection failed: {e}")
+        return None
+
