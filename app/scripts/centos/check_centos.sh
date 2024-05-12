@@ -50,10 +50,10 @@ echo {
 echo \"subtitle\": \"02. 패스워드 복합성 설정\(및 정책\)\",
 echo \"result\": [
 echo \"알고리즘 : `authconfig --test | grep hashing | awk '{print $5}'`\",
-echo \"최대 사용 기간 : `cat /etc/login.defs | grep PASS_MAX_DAYS | awk '{print $2}' | sed '1d'`일\",
-echo \"최소 사용 기간 : `cat /etc/login.defs | grep PASS_MIN_DAYS | awk '{print $2}' | sed '1d'`일\",
-echo \"최소 길이 : `cat /etc/login.defs | grep PASS_MIN_LEN | awk '{print $2}' | sed '1d'`글자\",
-echo \"기간 만료 경고 기간\(일\) : `cat /etc/login.defs | grep PASS_WARN_AGE | awk '{print $2}' | sed '1d'`일\",
+echo \"최대 사용 기간 : `sudo cat /etc/login.defs | grep PASS_MAX_DAYS | awk '{print $2}' | sed '1d'`일\",
+echo \"최소 사용 기간 : `sudo cat /etc/login.defs | grep PASS_MIN_DAYS | awk '{print $2}' | sed '1d'`일\",
+echo \"최소 길이 : `sudo cat /etc/login.defs | grep PASS_MIN_LEN | awk '{print $2}' | sed '1d'`글자\",
+echo \"기간 만료 경고 기간\(일\) : `sudo cat /etc/login.defs | grep PASS_WARN_AGE | awk '{print $2}' | sed '1d'`일\",
 echo \"권장 정책 : 영문,숫자,특수문자를 조합하여 2종류 조합 시 10자리 이상, 3종류 이상 조합 시 8자리 이상\(공공기간 9자리 이상\)\"
 echo ]
 echo },
