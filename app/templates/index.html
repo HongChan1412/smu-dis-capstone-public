@@ -5,6 +5,23 @@
         <title>서버 보안 가이드라인에 따른 점검 및 보고서 생성 시스템</title>
         <link rel="stylesheet" type="text/css" href="/static/css/index.css">
         <script src="/static/js/script.js"></script>
+        <style>
+            .Name{
+                text-align: right;
+            }
+            .join-wrapper{ 
+                width: fit-content;
+                margin:auto;
+                padding: 40px;
+                box-sizing: border-box;
+                background-color: #FFFFFF ;
+                border-radius: 5%;
+                border: 2px solid rgb(234, 234, 234);
+            }
+            #checkButton{
+            margin-left: 170px; /* 원하는 간격으로 조절 가능 */
+        }
+        </style>
     </head>
     
     <body>
@@ -23,50 +40,54 @@
         
         <div>            
             <div>
-                <div style ="display: flex; width: 70%; margin:auto;">
-                    <div class="join-wrapper" id="serverInput">
+                <div class="join-wrapper">
+                    <div id="serverInput">
                             <h2>서버정보 입력</h2>
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th> Company </th>
-                                        <th> <input id="company" type="text" placeholder="name"> </th>
+                                        <th class="Name"> Company </th>
+                                        <th> <input id="company" type="text" placeholder="CompanyName"> </th>
                                     </tr>
                                     <tr>
-                                        <th> IP </th>
+                                        <th class="Name"> IP </th>
                                         <th> <input id="ip" type="text" placeholder="0.0.0.0"> </th>
                                     </tr>
                                     <tr>
-                                        <th> Port </th>
+                                        <th class="Name"> Port </th>
                                         <th> <input id="port" type="text" placeholder="22" placeholder="Port (default 22)"> </th>
                                     </tr>
                                     <tr>
-                                        <th> User </th>
-                                        <th> <input id="user" type="text" placeholder="root"> </th>
+                                        <th class="Name"> User </th>
+                                        <th> <input id="user" type="text" placeholder="UserName"> </th>
                                     </tr>
                                     <tr>
-                                        <th> Password </th>
-                                        <th> <input id="passwd" type="password" value="guest1412"> </th>
+                                        <th class="Name"> User Password </th>
+                                        <th> <input id="passwd" type="password" value="guest1234"> </th>
+                                    </tr>
+                                    <tr>
+                                        <th class="Name"> Root Password </th>
+                                        <th> <input id="rootpasswd" type="password" value="rootpw1234"> </th>
                                     </tr>
                                 </tbody>   
                             </table>
-                            <div style=" margin-left: 210px;">
+                            <div style=" text-align: right;">
                                 <button id="connect">Connect</button>
                             </div>
                     </div>
-                    <div class="join-wrapper" style="display:none;" id="osSelection">
+                    <div style="display:none; width:250px;" id="osSelection">
                         <div >
                             <b id="choice_box">운영체제 선택</b>
                             </br>
                             </br>
                             <form id="checkboxForm">
-                            <input type="checkbox" id="option1" name="option" value="Ubuntu" disabled>
+                            <input type="checkbox" id="option1" name="option" value="Ubuntu">
                             <label for="option1">Ubuntu-18.04</label><br>
-                            <input type="checkbox" id="option2" name="option" value="CentOS" disabled>
+                            <input type="checkbox" id="option2" name="option" value="CentOS">
                             <label for="option2">CentOS-7.9</label><br>
                             </form> 
                             <p id="result"></p> 
-                            <button id="checkButton" style="margin-bottom: 20px; margin-left: 230px;" disabled>점검 실행</button>
+                            <button id="checkButton">점검 실행</button>
                         </div>
                     </div>
                 </div>
@@ -79,7 +100,7 @@
             </div>            
             <br>
     </body>        
-    <div style="display: block; margin:10px; text-align: center;">
+    <div style="display: block; margin:30px; text-align: center;">
         <hr style="width:1400px;"></hr>
         <b class="subj"> 상명대학교 정보보안공학과 </b></br>
         <b class="subj"> 1조 내일봬요누나 </b>         
@@ -108,32 +129,43 @@
             var port = document.getElementById("port").value;
             var user = document.getElementById("user").value;
             var password = document.getElementById("passwd").value;
+            var rootpassword = document.getElementById("rootpasswd").value; 
 
-            if(company !== "" && ip !== "" && port !== "" && user !== "" && passwd !== "") {
-                // 서버 정보 입력 영역 숨기기
-                document.getElementById('serverInput').style.display = 'none';
-                // 운영체제 선택 영역 표시
-                document.getElementById('osSelection').style.display = 'flex';
-            } else {
-                // 필수 정보 입력 요청 알림
-                alert("모든 서버 정보를 입력해주세요.");
-            }
-            // 입력 필드로부터 값을 가져옵니다.
-            if (name && ip && port && user && password) {
+            if(name !== "" && ip !== "" && port !== "" && user !== "" && password !== "" && rootpassword !== "") {
                 var encodedIp = encodeURIComponent(ip);
                 var encodedPort = encodeURIComponent(port);
                 var encodedUser = encodeURIComponent(user);
                 var encodedPassword = encodeURIComponent(password);
+                var encodedRootPassword = encodeURIComponent(rootpassword);
 
-                // 로컬 스토리지에 인코딩된 값을 저장합니다.
                 localStorage.setItem("targetCompany", name);
                 localStorage.setItem("targetIp", encodedIp);
                 localStorage.setItem("targetPort", encodedPort);
                 localStorage.setItem("targetUser", encodedUser);
                 localStorage.setItem("targetPasswd", encodedPassword);
-                enableButtons();
-                // 저장 완료 알림을 표시합니다. (선택적)
-                //alert("서버 정보가 입력되었습니다.");
+                localStorage.setItem("targetRootPasswd", encodedRootPassword);
+
+                const baseUrl = "http://49.50.166.249:8000/hc/execute_script"; 
+                const queryParams = `?host=${encodedIp}&port=${encodedPort}&username=root&password=${encodedRootPassword}&os_type=common&script=add&user=${encodedUser}`;
+                const fullUrl = baseUrl + queryParams;
+
+                fetch(fullUrl)
+                .then(response => response.json()) 
+                .then(data => {
+                    if(data == null) { 
+                        alert("입력값이 잘못되었습니다."); 
+                    } else {
+                        document.getElementById('serverInput').style.display = 'none';
+                        document.getElementById('osSelection').style.display = 'flex';
+                        console.log("Add Response Data: ", data);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching data: ", error);
+                    alert("데이터 요청 중 오류가 발생했습니다.");
+                });
+            } else {
+                alert("모든 서버 정보를 입력해주세요.");
             }
         });
         
@@ -145,16 +177,17 @@
             if (ubuntuCheckbox.checked && centOSCheckbox.checked) {
                 resultText.textContent = "하나의 운영체제만 선택해주세요.";
             } else if (ubuntuCheckbox.checked) {
-                localStorage.setItem('selectedOS', 'Ubuntu-18.04'); // Ubuntu 선택 저장
+                localStorage.setItem('selectedOS', 'Ubuntu-18.04');
                 localStorage.setItem('OS', 'ubuntu');
-                window.location.href = "ubuntu"; // Ubuntu 페이지로 이동
+                window.location.href = "ubuntu";
             } else if (centOSCheckbox.checked) {
-                localStorage.setItem('selectedOS', 'CentOS-7.9'); // CentOS 선택 저장
+                localStorage.setItem('selectedOS', 'CentOS-7.9'); 
                 localStorage.setItem('OS', 'centos');
-                window.location.href = "centos"; // CentOS 페이지로 이동
+                window.location.href = "centos"; 
             } else {
                 resultText.textContent = "운영체제를 선택해주세요.";
             }
         });
+
     </script>
 </html>

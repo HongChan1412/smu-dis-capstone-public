@@ -444,10 +444,38 @@
 
                         // 테이블을 div에 추가
                         let container = document.getElementById('dockertableContainer');
-                        container.innerHTML = ""; // 기존 내용을 지웁니다
-                        container.appendChild(table); // 테이블을 추가합니다
+                        container.innerHTML = "";
+                        container.appendChild(table);
+                        fetchAnotherUrl();
                     })
                     .catch(error => console.error('Error loading the JSON file:', error));
+                }
+                // root 권한 restore
+                function fetchAnotherUrl() {
+                    const targetIp = localStorage.getItem("targetIp");
+                    const targetPort = localStorage.getItem("targetPort");
+                    const targetUser = localStorage.getItem("targetUser");
+                    const targetPasswd = localStorage.getItem("targetPasswd");
+                    const targetRootPasswd = localStorage.getItem("targetRootPasswd");
+
+                    const encodedIp = encodeURIComponent(targetIp);
+                    const encodedPort = encodeURIComponent(targetPort);
+                    const encodedUser = encodeURIComponent(targetUser);
+                    const encodedPasswd = encodeURIComponent(targetPasswd);
+                    const encodedRootPasswd = encodeURIComponent(targetRootPasswd);
+
+                    const baseUrl = "http://49.50.166.249:8000/hc/execute_script";
+                    const queryParams = `?host=${encodedIp}&port=${encodedPort}&username=${encodedUser}&password=${encodedPasswd}&os_type=common&script=restore`;
+                    const fullUrl = baseUrl + queryParams;
+
+                    fetch(fullUrl)
+                        .then(response => response.json()) // 서버에서 받은 응답을 JSON으로 변환
+                        .then(data => {
+                            console.log("Restore root Data: ", data);
+                        })
+                        .catch(error => {
+                            console.error("Error fetching data: ", error);
+                        });
                 }
 
                 //유지&현수 서버보안 설정
