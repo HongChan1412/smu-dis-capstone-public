@@ -77,7 +77,7 @@ echo {
 echo \"subtitle\": \"04. 패스워드 파일 보호\",
 echo \"result\": [
 if [[ $(awk -F: '/^root/ {print $2}' /etc/passwd) =~ ^\$6\$ ]]; 	then
-	  if test -r /etc/shadow
+	  if sudo test -r /etc/shadow
 	    then
 	      echo \"[안전] Shadow 패스워드 시스템을 사용중입니다\"
     else
@@ -819,29 +819,29 @@ echo \"subtitle\": \"37. Apache 상위 디렉터리 접근 금지\",
 echo \"result\": [
 if [ "$AI" ]
 	then
-    GC=`cat /etc/apache2/apache2.conf  | grep AllowOverride | sed -n '1p' | awk '{print $2}'`
+    GC=`cat /etc/apache2/apache2.conf | grep AllowOverride | sed -n '1p' | awk '{print $2}'`
 		if [ $GC = AuthConfig ]
 			then
 				echo \"[안전] 디렉터리별 사용자 인증이 설정되어 있습니다\",
 				echo \"사용자 인증이 필요한 디렉터리에 다음의 지시자들이 포함된 .htaccess 파일 생성\",
-				echo \"***************************************************************\",
-				echo \"*     지시자     *                     설명                  **\",
-				echo \"***************************************************************\",
-				echo \"* AuthType       *  인증 형태 \(Baisc / Digest\)                *\",
-				echo \"* AuthName       *  인증 영역 \(웹 브라우저의 인증창에 표시\)   *\",
-				echo \"* AuthUserFile   *  사용자 패스워드 파일의 위치               *\",
-				echo \"* AuthGroupFile  *  그룹 파일의 위치 \(옵션\)                   *\",
-				echo \"* Require        *  접근을 허용할 사용자 / 그룹 정의          *\",
-				echo \"***************************************************************\",
-				echo \"***************************************************************\",
+				echo \"---------------------------------------------------------------\",
+				echo \"-     지시자     -                     설명                  --\",
+				echo \"---------------------------------------------------------------\",
+				echo \"- AuthType       -  인증 형태 \(Baisc / Digest\)                -\",
+				echo \"- AuthName       -  인증 영역 \(웹 브라우저의 인증창에 표시\)   -\",
+				echo \"- AuthUserFile   -  사용자 패스워드 파일의 위치               -\",
+				echo \"- AuthGroupFile  -  그룹 파일의 위치 \(옵션\)                   -\",
+				echo \"- Require        -  접근을 허용할 사용자 / 그룹 정의          -\",
+				echo \"---------------------------------------------------------------\",
+				echo \"---------------------------------------------------------------\",
 				echo \".htaccess 파일의 예제는 다음과 같음\",
-				echo \"***************************************\",
+				echo \"---------------------------------------\",
 				echo \"# vi .htaccess\",
 				echo \"AuthType Basic\",
 				echo \"AuthName \'Welcome to AnonSE Server\'\",
 				echo \"AuthUserFile /etc/shadow\",
 				echo \"Require valid-user\",
-				echo \"***************************************\"
+				echo \"---------------------------------------\"
 			else
 				echo \"[취약] 디렉터리별 사용자 인증이 설정되어 있지 않습니다\"
 		fi

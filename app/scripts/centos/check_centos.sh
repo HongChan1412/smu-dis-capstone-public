@@ -17,7 +17,7 @@ echo },
 echo {
 echo \"title\": \"2. 네트워크 정보\",
 echo \"result\": [
-echo \"`ifconfig -a`\"
+echo \"`sudo ifconfig -a`\"
 echo ]
 echo }
 echo ]
@@ -37,7 +37,7 @@ else
     echo \"\[취약] 콘솔 로그인 이외의 로그인이 가능합니다\",
 fi
 
-if [ "$(grep -Ei '^\s*PermitRootLogin\s+yes' /etc/ssh/sshd_config)" ]
+if [ "$(sudo grep -Ei '^\s*PermitRootLogin\s+yes' /etc/ssh/sshd_config)" ]
 then
     echo \"\[취약] root 계정의 원격 접속이 허용됩니다\"
 else
@@ -49,7 +49,7 @@ echo },
 echo {
 echo \"subtitle\": \"02. 패스워드 복합성 설정\(및 정책\)\",
 echo \"result\": [
-echo \"알고리즘 : `authconfig --test | grep hashing | awk '{print $5}'`\",
+echo \"알고리즘 : `sudo authconfig --test | grep hashing | awk '{print $5}'`\",
 echo \"최대 사용 기간 : `sudo cat /etc/login.defs | grep PASS_MAX_DAYS | awk '{print $2}' | sed '1d'`일\",
 echo \"최소 사용 기간 : `sudo cat /etc/login.defs | grep PASS_MIN_DAYS | awk '{print $2}' | sed '1d'`일\",
 echo \"최소 길이 : `sudo cat /etc/login.defs | grep PASS_MIN_LEN | awk '{print $2}' | sed '1d'`글자\",
@@ -77,7 +77,7 @@ echo \"subtitle\": \"04. 패스워드 파일 보호\",
 echo \"result\": [
 if [ "`cat /etc/passwd | grep "root" | awk -F: '{print $2}' | sed -n '1p'`" = x ]
 	then
-	  if test -r /etc/shadow
+	  if sudo test -r /etc/shadow
 	    then
 	      echo \"[안전] Shadow 패스워드 시스템을 사용중입니다\"
     else
