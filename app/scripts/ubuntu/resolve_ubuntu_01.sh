@@ -15,8 +15,5 @@ change_permit_root_login() {
 
 
 main(){
-	set_account_lock_threshold
-	set_account_lock_threshold
+        change_permit_root_login
 }
-
-main

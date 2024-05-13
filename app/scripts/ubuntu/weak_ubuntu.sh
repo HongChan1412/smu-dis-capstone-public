@@ -1,4 +1,3 @@
-#취약코드
 #!/bin/bash
 #=====================1번 취약=================
 
@@ -6,7 +5,7 @@ remove_account_lock_threshold() {
     # 계정 잠금 임계값이 설정되어 있는지 확인
     if grep -q 'pam_tally2.so' /etc/pam.d/common-auth; then
         echo "계정 잠금 임계값 설정이 발견되었습니다. 설정을 삭제합니다."
-        
+
         # 설정된 계정 잠금 임계값 삭제
         sudo sed -i '/pam_tally2.so/d' /etc/pam.d/common-auth
         echo "계정 잠금 임계값 설정이 삭제되었습니다."
@@ -188,7 +187,7 @@ removeSendmailOptions() {
 
         # 현재 PrivacyOptions 검사
         local CURRENT_OPTIONS=$(grep "^O PrivacyOptions" $SENDMAIL_CF | awk -F= '{print $2}')
-        
+
         # 제거해야 할 옵션이 현재 설정에 있는지 확인하고, 있으면 제거
         for option in "${REMOVE_OPTIONS[@]}"; do
             if echo "$CURRENT_OPTIONS" | tr ',' '\n' | grep -q "$option"; then
@@ -223,7 +222,7 @@ update_allow_override_and_restart_apache() {
     if [ "$GC" != "$NEW_ALLOW_OVERRIDE" ]; then
         # AllowOverride 설정이 원하는 값과 다른 경우, 원하는 값으로 변경
         sudo sed -i "/AllowOverride/ s/\(AllowOverride \).*/\1$NEW_ALLOW_OVERRIDE/" "$APACHE_CONFIG_FILE"
-        
+
         echo "AllowOverride가 $NEW_ALLOW_OVERRIDE로 변경되었습니다."
 
         # Apache 서비스 재시작
@@ -238,7 +237,7 @@ update_allow_override_and_restart_apache() {
 enable_symlinks_apache() {
     # Apache 설정 파일 지정
     APACHE_CONF="/etc/apache2/apache2.conf"
-    
+
     # Apache 설정 파일 백업
     sudo cp $APACHE_CONF "${APACHE_CONF}.bak"
 
@@ -265,16 +264,16 @@ enable_symlinks_apache() {
 #=====================40번 취약=================
 # 변수 설정
 PHP_INI="/etc/php.ini"
-APACHE_CONF="/etc/apache2/apache2.conf"  
+APACHE_CONF="/etc/apache2/apache2.conf"
 
 # PHP의 post_max_size 설정을 완전히 제거하는 함수
 remove_php_post_max_size() {
     PHP_INI="/etc/php.ini"
     cp $PHP_INI "$PHP_INI.bak"
-    
+
     # post_max_size 설정을 완전히 제거합니다.
     sed -i '/post_max_size/d' $PHP_INI
-    
+
     echo "PHP post_max_size 설정이 완전히 제거되었습니다."
 }
 
@@ -283,10 +282,10 @@ remove_php_post_max_size() {
 remove_apache_limit_request_body() {
     APACHE_CONF="/etc/apache2/apache2.conf"
     cp $APACHE_CONF "$APACHE_CONF.bak"
-    
+
     # LimitRequestBody 설정을 완전히 제거합니다.
     sed -i '/LimitRequestBody/d' $APACHE_CONF
-    
+
     echo "Apache LimitRequestBody 설정이 완전히 제거되었습니다."
 }
 
