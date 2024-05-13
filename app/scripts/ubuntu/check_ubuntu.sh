@@ -64,11 +64,11 @@ echo \"subtitle\": \"03. 계정 잠금 \(임계값\) 설정\",
 echo \"result\": [
 TI=$(sed -n '/auth.*pam_tally2.so.*deny=/ s/.*deny=\([0-9]\+\).*/\1/p' /etc/pam.d/common-auth)
 if [ "`grep deny= /etc/pam.d/common-auth`" ]
-	then
-		echo \"[안전] $TI번 로그인 실패시 계정이 잠깁니다\"
-	else
-		echo \"[취약] 계정 잠금 정책이 설정되어 있지 않습니다\",
-	  echo \"[수동조치권장] 로그인 5회 이상 실패시 계정 잠김\"
+        then
+                echo \"[안전] $TI번 로그인 실패시 계정이 잠깁니다\"
+        else
+                echo \"[취약] 계정 잠금 정책이 설정되어 있지 않습니다\",
+          echo \"[수동조치권장] 로그인 5회 이상 실패시 계정 잠김\"
 fi
 echo ]
 echo },
@@ -76,13 +76,13 @@ echo },
 echo {
 echo \"subtitle\": \"04. 패스워드 파일 보호\",
 echo \"result\": [
-if [[ $(awk -F: '/^root/ {print $2}' /etc/passwd) =~ ^\$6\$ ]]; 	then
-	  if sudo test -r /etc/shadow
-	    then
-	      echo \"[안전] Shadow 패스워드 시스템을 사용중입니다\"
+if [[ $(awk -F: '/^root/ {print $2}' /etc/passwd) =~ ^\$6\$ ]];         then
+          if sudo test -r /etc/shadow
+            then
+              echo \"[안전] Shadow 패스워드 시스템을 사용중입니다\"
     else
-	    echo \"[취약] Passwd 패스워드 시스템을 사용중입니다\"
-	fi
+            echo \"[취약] Passwd 패스워드 시스템을 사용중입니다\"
+        fi
 fi
 echo ]
 echo },
@@ -103,16 +103,16 @@ else
     fi
 fi
 if [ $PO = root ]
-	then
-		echo \"[안전] 소유자 : $PO\",
-	else
-		echo \"[취약] 소유자 : $PO\",
+        then
+                echo \"[안전] 소유자 : $PO\",
+        else
+                echo \"[취약] 소유자 : $PO\",
 fi
 if [ $PG = root ]
-	then
-		echo \"[안전] 그룹 : $PO\"
-	else
-		echo \"[취약] 그룹 : $PO\"
+        then
+                echo \"[안전] 그룹 : $PO\"
+        else
+                echo \"[취약] 그룹 : $PO\"
 fi
 echo ]
 echo },
@@ -121,27 +121,27 @@ echo {
 echo \"subtitle\": \"04-2. /etc/shadow\",
 echo \"result\": [
 if test `ls -l /etc/shadow | awk {'print $1'}` = -r-------- || test `ls -l /etc/shadow | awk {'print $1'}` = -r--------.
-	then
-		echo \"[안전] 권한 : `ls -l /etc/shadow | awk {'print $1'}`\",
+        then
+                echo \"[안전] 권한 : `ls -l /etc/shadow | awk {'print $1'}`\",
 else
-	if test `ls -l /etc/shadow | awk {'print $1'} ` = ----------. || test `ls -l /etc/shadow | awk {'print $1'} ` = ----------
-		then
-			echo \"[안전] 권한 : `ls -l /etc/shadow | awk {'print $1'}`\",
-		else
-			echo \"[취약] 권한 : `ls -l /etc/shadow | awk {'print $1'}`\",
-	fi
+        if test `ls -l /etc/shadow | awk {'print $1'} ` = ----------. || test `ls -l /etc/shadow | awk {'print $1'} ` = ----------
+                then
+                        echo \"[안전] 권한 : `ls -l /etc/shadow | awk {'print $1'}`\",
+                else
+                        echo \"[취약] 권한 : `ls -l /etc/shadow | awk {'print $1'}`\",
+        fi
 fi
 if test `ls -l /etc/shadow | awk {'print $3'}` = root
-	then
-		echo \"[안전] 소유자 : `ls -l /etc/shadow | awk {'print $3'}`\",
-	else
-		echo \"[취약] 소유자 : `ls -l /etc/shadow | awk {'print $3'}`\",
+        then
+                echo \"[안전] 소유자 : `ls -l /etc/shadow | awk {'print $3'}`\",
+        else
+                echo \"[취약] 소유자 : `ls -l /etc/shadow | awk {'print $3'}`\",
 fi
 if test `ls -l /etc/shadow | awk {'print $4'} ` = root
-	then
-		echo \"[안전] 그룹 : `ls -l /etc/shadow | awk {'print $4'}`\"
-	else
-		echo \"[취약] 그룹 : `ls -l /etc/shadow | awk {'print $4'}`\"
+        then
+                echo \"[안전] 그룹 : `ls -l /etc/shadow | awk {'print $4'}`\"
+        else
+                echo \"[취약] 그룹 : `ls -l /etc/shadow | awk {'print $4'}`\"
 fi
 echo ]
 echo }
@@ -179,13 +179,14 @@ else
 fi
 echo ]
 echo },
+END
+
 echo {
 echo \"subtitle\": \"07. /etc/passwd 파일 소유자 및 권한 설정\",
 echo \"result\": [
 echo \"[수동조치권장] 04-01 항목 참고\"
 echo ]
 echo },
-END
 
 echo {
 echo \"subtitle\": \"07. /etc/passwd 파일 소유자 및 권한 설정\",
@@ -207,15 +208,15 @@ echo \"result\": [
 HO=`ls -l /etc/hosts | awk '{print $3}'`
 HP=`ls -l /etc/hosts | awk '{print $1}'`
 if [ $HO = root ]
-	then
-		echo \"[안전] hosts 파일 소유자 : $HO\",
-	else
-		echo \"[취약] hosts 파일 소유자 : $HO\",
+        then
+                echo \"[안전] hosts 파일 소유자 : $HO\",
+        else
+                echo \"[취약] hosts 파일 소유자 : $HO\",
 fi
 if [ "$HP" = "-rw-------." -o "$HP" = "-rw-------" ]; then
-	echo \"[안전] hosts 파일 권한 : $HP\"
-	else
-		echo \"[취약] hosts 파일 권한 : $HP\"
+        echo \"[안전] hosts 파일 권한 : $HP\"
+        else
+                echo \"[취약] hosts 파일 권한 : $HP\"
 fi
 echo ]
 echo },
@@ -224,68 +225,68 @@ echo {
 echo \"subtitle\": \"10. /etc/\(x\)inetd.conf 파일 소유자 및 권한 설정\",
 echo \"result\": [
 if test -f /etc/inetd.conf
-	then
-		echo \"[OOOO] inetd.conf 파일이 존재합니다\",
-		IO=`ls -l /etc/inetd.conf | awk '{print $3}'`
-		IP=`ls -l /etc/inetd.conf | awk '{print $1}'`
+        then
+                echo \"[OOOO] inetd.conf 파일이 존재합니다\",
+                IO=`ls -l /etc/inetd.conf | awk '{print $3}'`
+                IP=`ls -l /etc/inetd.conf | awk '{print $1}'`
 
-		if [ $IO = root ]
-			then
-				echo \"[안전] inetd.conf 파일 소유자 : $IO\",
-			else
-				echo \"[취약] inetd.conf 파일 소유자 : $IO\",
-		fi
-	if [ "$IP" = "-rw-------." -o "$IP" = "-rw-------"  ]
-		then
-			echo \"[안전] inetd.conf 파일 권한 : $IP\",
-		else
-			echo \"[취약] inetd.conf 파일 권한 : $IP\",
-	fi
+                if [ $IO = root ]
+                        then
+                                echo \"[안전] inetd.conf 파일 소유자 : $IO\",
+                        else
+                                echo \"[취약] inetd.conf 파일 소유자 : $IO\",
+                fi
+        if [ "$IP" = "-rw-------." -o "$IP" = "-rw-------"  ]
+                then
+                        echo \"[안전] inetd.conf 파일 권한 : $IP\",
+                else
+                        echo \"[취약] inetd.conf 파일 권한 : $IP\",
+        fi
 else
-	echo \"[XXXX] inetd.conf 파일이 존재하지 않습니다\",
+        echo \"[XXXX] inetd.conf 파일이 존재하지 않습니다\",
 fi
 if test -f /etc/xinetd.conf
-	then
-		echo \"[OOOO] xinetd.conf 파일이 존재합니다\",
-		XO=`ls -l /etc/xinetd.conf | awk '{print $3}'`
-		XP=`ls -l /etc/xinetd.conf | awk '{print $1}'`
+        then
+                echo \"[OOOO] xinetd.conf 파일이 존재합니다\",
+                XO=`ls -l /etc/xinetd.conf | awk '{print $3}'`
+                XP=`ls -l /etc/xinetd.conf | awk '{print $1}'`
 
-		if [ $XO = root ]
-			then
-				echo \"[안전] xinetd.conf 파일 소유자 : $XO\",
-			else
-				echo \"[취약] xinetd.conf 파일 소유자 : $XO\",
-		fi
-	if [ "$XP" = "-rw-------." -o "$XP" = "-rw-------" ]
-		then
-			echo \"[안전] xinetd.conf 파일 권한 : $XP\",
-		else
-			echo \"[취약] xinetd.conf 파일 권한 : $XP\",
-	fi
+                if [ $XO = root ]
+                        then
+                                echo \"[안전] xinetd.conf 파일 소유자 : $XO\",
+                        else
+                                echo \"[취약] xinetd.conf 파일 소유자 : $XO\",
+                fi
+        if [ "$XP" = "-rw-------." -o "$XP" = "-rw-------" ]
+                then
+                        echo \"[안전] xinetd.conf 파일 권한 : $XP\",
+                else
+                        echo \"[취약] xinetd.conf 파일 권한 : $XP\",
+        fi
 else
-	echo \"[XXXX] xinetd.conf 파일이 존재하지 않습니다\",
+        echo \"[XXXX] xinetd.conf 파일이 존재하지 않습니다\",
 fi
 if [ -d "/etc/xinetd.d" ]
-	then
-		echo \"[OOOO] /etc/xinetd.d/ 폴더가 존재합니다\",
-		FP=`ls -l /etc/xinetd.d/ | awk '{print $1, $9}' | sed -n '1!p' | grep -v "^-rw-r--r--"`
-		FO=`ls -l /etc/xinetd.d/ | awk '{print $3, $9}' | sed -n '1!p' | grep -v "^root"`
-		if [ "$FP" ]
-			then
-				echo \"[취약] 권한이 잘못 설정된 파일 있습니다.\",
-				echo \"        > $FP\"
-			else
-				echo \"[안전] 해당 폴더에 서비스 파일이 존재하지 않거나, 모든 파일이 올바른 "권한"으로 설정되어 있습니다.\",
-		fi
-		if [ "$FO" ]
-			then
-				echo \"[취약] 소유자 잘못 설정된 파일 있습니다.\",
-				echo \"        > $FO\"
-			else
-				echo \"[안전] 해당 폴더에 서비스 파일이 존재하지 않거나, 모든 파일이 올바른 "소유자"로 설정되어 있습니다.\"
-		fi
+        then
+                echo \"[OOOO] /etc/xinetd.d/ 폴더가 존재합니다\",
+                FP=`ls -l /etc/xinetd.d/ | awk '{print $1, $9}' | sed -n '1!p' | grep -v "^-rw-r--r--"`
+                FO=`ls -l /etc/xinetd.d/ | awk '{print $3, $9}' | sed -n '1!p' | grep -v "^root"`
+                if [ "$FP" ]
+                        then
+                                echo \"[취약] 권한이 잘못 설정된 파일 있습니다.\",
+                                echo \"        > $FP\"
+                        else
+                                echo \"[안전] 해당 폴더에 서비스 파일이 존재하지 않거나, 모든 파일이 올바른 "권한"으로 설정되어 있습니다.\",
+                fi
+                if [ "$FO" ]
+                        then
+                                echo \"[취약] 소유자 잘못 설정된 파일 있습니다.\",
+                                echo \"        > $FO\"
+                        else
+                                echo \"[안전] 해당 폴더에 서비스 파일이 존재하지 않거나, 모든 파일이 올바른 "소유자"로 설정되어 있습니다.\"
+                fi
 else
-	echo \"[XXXX] /etc/xinetd.d 폴더가 존재하지 않습니다\"
+        echo \"[XXXX] /etc/xinetd.d 폴더가 존재하지 않습니다\"
 fi
 echo ]
 echo },
@@ -295,43 +296,43 @@ echo \"subtitle\": \"11. /etc/\(r\)syslog.conf 파일 소유자 및 권한 설�
 echo \"result\": [
 
 if test -f /etc/syslog.conf
-	then
-		echo \"[OOOO] syslog.conf 파일이 존재합니다\",
-		IO=`ls -l /etc/syslog.conf | awk '{print $3}'`
-		IP=`ls -l /etc/syslog.conf | awk '{print $1}'`
-		if [ $IO = root ]
-			then
-				echo \"[안전] syslog.conf 파일 소유자 : $IO\",
-			else
-				echo \"[취약] syslog.conf 파일 소유자 : $IO\",
-		fi
-	if [ $IP = -rw-r--r--. ]
-		then
-			echo \"[안전] syslog.conf 파일 권한 : $IP\",
-		else
-			echo \"[취약] syslog.conf 파일 권한 : $IP\",
-	fi
+        then
+                echo \"[OOOO] syslog.conf 파일이 존재합니다\",
+                IO=`ls -l /etc/syslog.conf | awk '{print $3}'`
+                IP=`ls -l /etc/syslog.conf | awk '{print $1}'`
+                if [ $IO = root ]
+                        then
+                                echo \"[안전] syslog.conf 파일 소유자 : $IO\",
+                        else
+                                echo \"[취약] syslog.conf 파일 소유자 : $IO\",
+                fi
+        if [ $IP = -rw-r--r--. ]
+                then
+                        echo \"[안전] syslog.conf 파일 권한 : $IP\",
+                else
+                        echo \"[취약] syslog.conf 파일 권한 : $IP\",
+        fi
 else
-	echo \"[XXXX] syslog.conf 파일이 존재하지 않습니다\",
+        echo \"[XXXX] syslog.conf 파일이 존재하지 않습니다\",
 fi
 if test -f /etc/rsyslog.conf
-	then
-		echo \"[OOOO] rsyslog.conf 파일이 존재합니다\",
-		XO=`ls -l /etc/rsyslog.conf | awk '{print $3}'`
-		XP=`ls -l /etc/rsyslog.conf | awk '{print $1}'`
-		if [ $XO = root ]
-			then
-				echo \"[안전] rsyslog.conf 파일 소유자 : $XO\",
-			else
-				echo \"[취약] rsyslog.conf 파일 소유자 : $XO\",
-		fi
-	if [ "$XP" = "-rw-r--r--." -o "$XP" = "-rw-r--r--" ]; then
-		echo \"[안전] rsyslog.conf 파일 권한 : $XP\"
-		else
-			echo \"[취약] rsyslog.conf 파일 권한 : $XP\"
-	fi
+        then
+                echo \"[OOOO] rsyslog.conf 파일이 존재합니다\",
+                XO=`ls -l /etc/rsyslog.conf | awk '{print $3}'`
+                XP=`ls -l /etc/rsyslog.conf | awk '{print $1}'`
+                if [ $XO = root ]
+                        then
+                                echo \"[안전] rsyslog.conf 파일 소유자 : $XO\",
+                        else
+                                echo \"[취약] rsyslog.conf 파일 소유자 : $XO\",
+                fi
+        if [ "$XP" = "-rw-r--r--." -o "$XP" = "-rw-r--r--" ]; then
+                echo \"[안전] rsyslog.conf 파일 권한 : $XP\"
+                else
+                        echo \"[취약] rsyslog.conf 파일 권한 : $XP\"
+        fi
 else
-	echo \"[XXXX] rsyslog.conf 파일이 존재하지 않습니다\"
+        echo \"[XXXX] rsyslog.conf 파일이 존재하지 않습니다\"
 fi
 echo ]
 echo },
@@ -342,16 +343,16 @@ echo \"result\": [
 SO=`ls -l /etc/services | awk '{print $3}'`
 SP=`ls -l /etc/services | awk '{print $1}'`
 if [ $SO = root ]
-	then
-		echo \"[안전] services 파일 소유자 : $SO\",
-	else
-		echo \"[취약] services 파일 소유자 : $SO\",
+        then
+                echo \"[안전] services 파일 소유자 : $SO\",
+        else
+                echo \"[취약] services 파일 소유자 : $SO\",
 fi
 if [ "$SP" = "-rw-r--r--." -o "$SP" = "-rw-r--r--" ]
-	then
-		echo \"[안전] services 파일 권한 : $SP\"
-	else
-		echo \"[취약] services 파일 권한 : $SP\"
+        then
+                echo \"[안전] services 파일 권한 : $SP\"
+        else
+                echo \"[취약] services 파일 권한 : $SP\"
 fi
 echo ]
 echo },
@@ -467,15 +468,15 @@ echo {
 echo \"subtitle\": \"19. Finger 서비스 비활성화\",
 echo \"result\": [
 if test -f /etc/xinetd.d/finger
-	then
-		if [ "`cat /etc/xinetd.d/finger  | grep disable | awk '{print $3}'`" = yes ]
-			then
-				echo \"[안전] finger 서비스가 설치되어 있으나 비활성화 되어 있습니다\"
-			else
-				echo \"[취약] finger 서비스가 설치되어 있고, 활성화 되어 있습니다\"
-		fi
-	else
-		echo \"[안전] finger 서비스가 설치되어 있지 않습니다\"
+        then
+                if [ "`cat /etc/xinetd.d/finger  | grep disable | awk '{print $3}'`" = yes ]
+                        then
+                                echo \"[안전] finger 서비스가 설치되어 있으나 비활성화 되어 있습니다\"
+                        else
+                                echo \"[취약] finger 서비스가 설치되어 있고, 활성화 되어 있습니다\"
+                fi
+        else
+                echo \"[안전] finger 서비스가 설치되어 있지 않습니다\"
 fi
 echo ]
 echo },
@@ -484,15 +485,15 @@ echo {
 echo \"subtitle\": \"20. Anonymous FTP 비활성화\",
 echo \"result\": [
 if test -f /etc/vsftpd.conf
-	then
-		if [ "`cat /etc/vsftpd.conf | grep anonymous_enable | awk -F= '{print $2}'`" = NO ]
-			then
-				echo \"[안전] FTP에 익명 접속이 불가능합니다\"
-			else
-				echo \"[취약] FTP에 익명 접속이 가능합니다\"
-		fi
-	else
-		echo \"[XXXX] FTP 서비스가 설치되어 있지 않습니다\"
+        then
+                if [ "`cat /etc/vsftpd.conf | grep anonymous_enable | awk -F= '{print $2}'`" = NO ]
+                        then
+                                echo \"[안전] FTP에 익명 접속이 불가능합니다\"
+                        else
+                                echo \"[취약] FTP에 익명 접속이 가능합니다\"
+                fi
+        else
+                echo \"[XXXX] FTP 서비스가 설치되어 있지 않습니다\"
 fi
 echo ]
 echo },
@@ -503,15 +504,15 @@ echo \"result\": [
 echo \"스크립트 상의 진단은 rlogin만 진행\",
 echo \"기타 r 계열 서비스 목록은 21-1. r_services.txt 에서 확인\",
 if test -f /etc/xinetd.d/rlogin
-	then
-		if [ "`cat /etc/xinetd.d/rlogin | grep disable | awk '{print $3}'`" = yes ]
-			then
-				echo \"[안전] rlogin 서비스가 설치되어 있으나 비활성화 되어 있습니다\"
-			else
-				echo \"[취약] rlogin 서비스가 설치되어 있고, 활성화 되어 있습니다\"
-		fi
-	else
-		echo \"[안전] rlogin 서비스가 설치되어 있지 않습니다\"
+        then
+                if [ "`cat /etc/xinetd.d/rlogin | grep disable | awk '{print $3}'`" = yes ]
+                        then
+                                echo \"[안전] rlogin 서비스가 설치되어 있으나 비활성화 되어 있습니다\"
+                        else
+                                echo \"[취약] rlogin 서비스가 설치되어 있고, 활성화 되어 있습니다\"
+                fi
+        else
+                echo \"[안전] rlogin 서비스가 설치되어 있지 않습니다\"
 fi
 RS="21-1.r_services.txt"
 ls /etc/xinetd.d/r* 2>/dev/null > $RS
@@ -522,50 +523,50 @@ echo {
 echo \"subtitle\": \"22. cron 파일 소유자 및 권한 설정\",
 echo \"result\": [
 if test -f /etc/cron.allow
-	then
-		echo \"[OOOO] cron.allow 파일이 존재합니다\",
-		CO=`ls -l /etc/cron.allow | awk '{print $3}'`
-		CP=`ls -l /etc/cron.allow | awk '{print $1}'`
-		if [ $CO = root ]
-			then
-				echo \"[안전] cron.allow 파일 소유자 : $CO\",
-			else
-				echo \"[취약] cron.allow 파일 소유자 : $CO\",
-		fi
-		if [ "$CP" = "-rw-------." -o "$CP" = "-rw-------" ]; then
-			echo \"[안전] cron.allow 파일 권한 : $CP\",
-			else
-				if [ "$CP" = "-rw-r--r--." -o "$CP" = "-rw-r--r--" ]; then
-					echo \"[안전] cron.allow 파일 권한 : $CP\",
-					else
-						echo \"[취약] cron.allow 파일 권한 : $CP\",
-				fi
-		fi
+        then
+                echo \"[OOOO] cron.allow 파일이 존재합니다\",
+                CO=`ls -l /etc/cron.allow | awk '{print $3}'`
+                CP=`ls -l /etc/cron.allow | awk '{print $1}'`
+                if [ $CO = root ]
+                        then
+                                echo \"[안전] cron.allow 파일 소유자 : $CO\",
+                        else
+                                echo \"[취약] cron.allow 파일 소유자 : $CO\",
+                fi
+                if [ "$CP" = "-rw-------." -o "$CP" = "-rw-------" ]; then
+                        echo \"[안전] cron.allow 파일 권한 : $CP\",
+                        else
+                                if [ "$CP" = "-rw-r--r--." -o "$CP" = "-rw-r--r--" ]; then
+                                        echo \"[안전] cron.allow 파일 권한 : $CP\",
+                                        else
+                                                echo \"[취약] cron.allow 파일 권한 : $CP\",
+                                fi
+                fi
   else
-	  echo \"[XXXX] cron.allow 파일이 존재하지 않습니다\",
+          echo \"[XXXX] cron.allow 파일이 존재하지 않습니다\",
 fi
 if test -f /etc/cron.deny
-	then
-		echo \"[OOOO] cron.deny 파일이 존재합니다\",
-		CO=`ls -l /etc/cron.deny | awk '{print $3}'`
-		CP=`ls -l /etc/cron.deny | awk '{print $1}'`
-		if [ $CO = root ]
-			then
-				echo \"[안전] cron.deny 파일 소유자 : $CO\",
-			else
-				echo \"[취약] cron.deny 파일 소유자 : $CO\",
-		fi
-		if [ "$CP" = "-rw-------." -o "$CP" = "-rw-------" ]; then
-			echo \"[안전] cron.deny 파일 권한 : $CP\"
-			else
-				if [ "$CP" = "-rw-r--r--." -o "$CP" = "-rw-r--r--" ]; then
-					echo \"[안전] cron.deny 파일 권한 : $CP\"
-					else
-						echo \"[취약] cron.deny 파일 권한 : $CP\"
-				fi
-		fi
+        then
+                echo \"[OOOO] cron.deny 파일이 존재합니다\",
+                CO=`ls -l /etc/cron.deny | awk '{print $3}'`
+                CP=`ls -l /etc/cron.deny | awk '{print $1}'`
+                if [ $CO = root ]
+                        then
+                                echo \"[안전] cron.deny 파일 소유자 : $CO\",
+                        else
+                                echo \"[취약] cron.deny 파일 소유자 : $CO\",
+                fi
+                if [ "$CP" = "-rw-------." -o "$CP" = "-rw-------" ]; then
+                        echo \"[안전] cron.deny 파일 권한 : $CP\"
+                        else
+                                if [ "$CP" = "-rw-r--r--." -o "$CP" = "-rw-r--r--" ]; then
+                                        echo \"[안전] cron.deny 파일 권한 : $CP\"
+                                        else
+                                                echo \"[취약] cron.deny 파일 권한 : $CP\"
+                                fi
+                fi
 else
-	echo \"[XXXX] cron.deny 파일이 존재하지 않습니다\"
+        echo \"[XXXX] cron.deny 파일이 존재하지 않습니다\"
 fi
 echo ]
 echo },
@@ -585,22 +586,22 @@ if [[ -z $ET ]]
         echo \"[취약] echo 서비스가 활성화 되어 있습니다\",
 fi
 if [[ -z $DT ]]
-	then
-		echo \"[안전] discard 서비스가 설치되어 있지 않거나 비활성화 되어 있습니다.\",
-	else
-		echo \"[취약] discard 서비스가 활성화 되어 있습니다\",
+        then
+                echo \"[안전] discard 서비스가 설치되어 있지 않거나 비활성화 되어 있습니다.\",
+        else
+                echo \"[취약] discard 서비스가 활성화 되어 있습니다\",
 fi
 if [[ -z $TT ]]
-	then
-		echo \"[안전] daytime 서비스가 설치되어 있지 않거나 비활성화 되어 있습니다.\",
-	else
-		echo \"[취약] daytime 서비스가 활성화 되어 있습니다\",
+        then
+                echo \"[안전] daytime 서비스가 설치되어 있지 않거나 비활성화 되어 있습니다.\",
+        else
+                echo \"[취약] daytime 서비스가 활성화 되어 있습니다\",
 fi
 if [[ -z $CT ]]
-	then
-		echo \"[안전] chargen 서비스가 설치되어 있지 않거나 비활성화 되어 있습니다.\"
-	else
-		echo \"[취약] chargen 서비스가 활성화 되어 있습니다\"
+        then
+                echo \"[안전] chargen 서비스가 설치되어 있지 않거나 비활성화 되어 있습니다.\"
+        else
+                echo \"[취약] chargen 서비스가 활성화 되어 있습니다\"
 fi
 echo ]
 echo },
@@ -610,10 +611,10 @@ echo \"subtitle\": \"24. NFS 서비스 비활성화\",
 echo \"result\": [
 NC=`ps -ef | egrep "nfs|statd|lockd" | sed '$d' | grep -v kblock`
 if [ "$NC" ]
-	then
-		echo \"[취약] NFS 서비스가 동작 중입니다.\"
+        then
+                echo \"[취약] NFS 서비스가 동작 중입니다.\"
 else
-	echo \"[안전] NFS 서비스가 동작 중이지 않습니다.\"
+        echo \"[안전] NFS 서비스가 동작 중이지 않습니다.\"
 fi
 echo ]
 echo },
@@ -632,10 +633,10 @@ echo \"subtitle\": \"26. automountd 제거\",
 echo \"result\": [
 AM=`ps -ef | grep 'automount\|autofs' | sed '$d'`
 if [ "$AM" ]
-	then
-		echo \"[취약] NFS 서비스가 동작 중입니다.\"
+        then
+                echo \"[취약] NFS 서비스가 동작 중입니다.\"
 else
-	echo \"[안전] NFS 서비스가 동작 중이지 않습니다.\"
+        echo \"[안전] NFS 서비스가 동작 중이지 않습니다.\"
 fi
 echo ]
 echo },
@@ -661,7 +662,7 @@ ypwhich_result=$(ypwhich 2>/dev/null)
 if [[ -n $nis_config && -n $ypwhich_result ]]; then
     echo \"시스템이 NIS 서비스를 사용하고 있습니다.\",
     if echo "$nis_config" | grep -q "nisplus"; then
-     	  echo \"[안전] 데이터 인증이 강화된 NIS+를 사용하고 있습니다.\"
+          echo \"[안전] 데이터 인증이 강화된 NIS+를 사용하고 있습니다.\"
     else
         echo \"[취약] 기본적인 NIS를 사용하고 있습니다.\"
     fi
@@ -694,12 +695,12 @@ echo \"subtitle\": \"30. Sendmail 버전 점검\",
 echo \"result\": [
 SI=`dpkg -l | grep sendmail | awk '{print $1}'`
 if [ -n "$SI" ]
-	then
+        then
     SV=$(echo $(grep -oP '\$Id: sendmail.mc, v \K[^ ]+' /etc/mail/sendmail.mc))
-		echo \"[OOOO] 설치된 sendmail의 버전은 $SV 입니다\",
-		echo \"[수동조치권장] 최신 버전의 설치 및 업그레이드를 위해 sendmail 데몬의 중지가 필요하기 때문에 적절한 시간대에 수행해야 함\"
-	else
-		echo \"[XXXX] sendmail이 설치되어 있지 않습니다\"
+                echo \"[OOOO] 설치된 sendmail의 버전은 $SV 입니다\",
+                echo \"[수동조치권장] 최신 버전의 설치 및 업그레이드를 위해 sendmail 데몬의 중지가 필요하기 때문에 적절한 시간대에 수행해야 함\"
+        else
+                echo \"[XXXX] sendmail이 설치되어 있지 않습니다\"
 fi
 echo ]
 echo },
@@ -708,20 +709,20 @@ echo {
 echo \"subtitle\": \"31. 스팸 메일 릴레이 제한\",
 echo \"result\": [
 if [ -n "$SI" ]
-	then
-		SP=`ls -l /etc/mail/access | awk '{print $1}'`
-		if [ $SP ]
-			then
-				SP=`ls -l /etc/mail/access | awk '{print $1}'`
-				echo \"[안전] 스팸 메일 관련 설정 사항이 저장된 파일이 존재합니다\",
-				echo \"[진행] 해당 파일을 DB화 시켜 sendmail 데몬에 인식시키는 작업을 수행합니다\",
-				makemap hash /etc/mail/access < /etc/mail/access
-				echo \"[완료] 작업을 완료하였습니다\"
-		else
-				echo \"[취약] 스팸 메일 관련 설정 사항이 명시 된 파일이 존재하지 않습니다\"
-		fi
-	else
-		echo \"[XXXX] sendmail이 설치되어 있지 않습니다\"
+        then
+                SP=`ls -l /etc/mail/access | awk '{print $1}'`
+                if [ $SP ]
+                        then
+                                SP=`ls -l /etc/mail/access | awk '{print $1}'`
+                                echo \"[안전] 스팸 메일 관련 설정 사항이 저장된 파일이 존재합니다\",
+                                echo \"[진행] 해당 파일을 DB화 시켜 sendmail 데몬에 인식시키는 작업을 수행합니다\",
+                                makemap hash /etc/mail/access < /etc/mail/access
+                                echo \"[완료] 작업을 완료하였습니다\"
+                else
+                                echo \"[취약] 스팸 메일 관련 설정 사항이 명시 된 파일이 존재하지 않습니다\"
+                fi
+        else
+                echo \"[XXXX] sendmail이 설치되어 있지 않습니다\"
 fi
 echo ]
 echo },
@@ -730,16 +731,16 @@ echo {
 echo \"subtitle\": \"32. 일반사용자의 Sendmail 실행 방지\",
 echo \"result\": [
 if [ -n "$SI" ]
-	then
-		SV=`cat /etc/mail/sendmail.cf | grep PrivacyOptions | awk -F= '{print $2}'`
+        then
+                SV=`cat /etc/mail/sendmail.cf | grep PrivacyOptions | awk -F= '{print $2}'`
     if [[ $SV == *"authwarnings"* && $SV == *"novrfy"* && $SV == *"noexpn"* && $SV == *"restrictqrun"* ]]
-			then
-				echo \"[안전] 일반사용자의 sendmail 실행 방지가 설정되어 있습니다\"
-			else
-				echo \"[취약] 일반사용자의 sendmail 실행 방지가 설정되어 있지 않습니다\"
-		fi
-	else
-		echo \"[XXXX] sendmail이 설치되어 있지 않습니다\"
+                        then
+                                echo \"[안전] 일반사용자의 sendmail 실행 방지가 설정되어 있습니다\"
+                        else
+                                echo \"[취약] 일반사용자의 sendmail 실행 방지가 설정되어 있지 않습니다\"
+                fi
+        else
+                echo \"[XXXX] sendmail이 설치되어 있지 않습니다\"
 fi
 echo ]
 echo },
@@ -749,10 +750,10 @@ echo \"subtitle\": \"33. DNS 보안 버전 패치\",
 echo \"result\": [
 DS=`dig +short @168.126.63.1 porttest.dns-oarc.net TXT | awk -Fis '{print $2}' | awk -F: {'print $1'} | sed '1d' | awk '{print $1}'`
 if [ $DS=GOOD -o GREAT ]
-	then
-		echo \"[안전] DNS 보안 패치가 최신 버전입니다\"
-	else
-		echo \"[취약] DNS 보안 패치가 구 버전입니다\"
+        then
+                echo \"[안전] DNS 보안 패치가 최신 버전입니다\"
+        else
+                echo \"[취약] DNS 보안 패치가 구 버전입니다\"
 fi
 echo ]
 echo },
@@ -818,35 +819,35 @@ echo {
 echo \"subtitle\": \"37. Apache 상위 디렉터리 접근 금지\",
 echo \"result\": [
 if [ "$AI" ]
-	then
+        then
     GC=`cat /etc/apache2/apache2.conf | grep AllowOverride | sed -n '1p' | awk '{print $2}'`
-		if [ $GC = AuthConfig ]
-			then
-				echo \"[안전] 디렉터리별 사용자 인증이 설정되어 있습니다\",
-				echo \"사용자 인증이 필요한 디렉터리에 다음의 지시자들이 포함된 .htaccess 파일 생성\",
-				echo \"---------------------------------------------------------------\",
-				echo \"-     지시자     -                     설명                  --\",
-				echo \"---------------------------------------------------------------\",
-				echo \"- AuthType       -  인증 형태 \(Baisc / Digest\)                -\",
-				echo \"- AuthName       -  인증 영역 \(웹 브라우저의 인증창에 표시\)   -\",
-				echo \"- AuthUserFile   -  사용자 패스워드 파일의 위치               -\",
-				echo \"- AuthGroupFile  -  그룹 파일의 위치 \(옵션\)                   -\",
-				echo \"- Require        -  접근을 허용할 사용자 / 그룹 정의          -\",
-				echo \"---------------------------------------------------------------\",
-				echo \"---------------------------------------------------------------\",
-				echo \".htaccess 파일의 예제는 다음과 같음\",
-				echo \"---------------------------------------\",
-				echo \"# vi .htaccess\",
-				echo \"AuthType Basic\",
-				echo \"AuthName \'Welcome to AnonSE Server\'\",
-				echo \"AuthUserFile /etc/shadow\",
-				echo \"Require valid-user\",
-				echo \"---------------------------------------\"
-			else
-				echo \"[취약] 디렉터리별 사용자 인증이 설정되어 있지 않습니다\"
-		fi
-	else
-		echo \"[XXXX] Apache 서비스가 설치되어 있지 않습니다\"
+                if [ $GC = AuthConfig ]
+                        then
+                                echo \"[안전] 디렉터리별 사용자 인증이 설정되어 있습니다\",
+                                echo \"사용자 인증이 필요한 디렉터리에 다음의 지시자들이 포함된 .htaccess 파일 생성\",
+                                echo \"---------------------------------------------------------------\",
+                                echo \"-     지시자     -                     설명                  --\",
+                                echo \"---------------------------------------------------------------\",
+                                echo \"- AuthType       -  인증 형태 \(Baisc / Digest\)                -\",
+                                echo \"- AuthName       -  인증 영역 \(웹 브라우저의 인증창에 표시\)   -\",
+                                echo \"- AuthUserFile   -  사용자 패스워드 파일의 위치               -\",
+                                echo \"- AuthGroupFile  -  그룹 파일의 위치 \(옵션\)                   -\",
+                                echo \"- Require        -  접근을 허용할 사용자 / 그룹 정의          -\",
+                                echo \"---------------------------------------------------------------\",
+                                echo \"---------------------------------------------------------------\",
+                                echo \".htaccess 파일의 예제는 다음과 같음\",
+                                echo \"---------------------------------------\",
+                                echo \"# vi .htaccess\",
+                                echo \"AuthType Basic\",
+                                echo \"AuthName \'Welcome to AnonSE Server\'\",
+                                echo \"AuthUserFile /etc/shadow\",
+                                echo \"Require valid-user\",
+                                echo \"---------------------------------------\"
+                        else
+                                echo \"[취약] 디렉터리별 사용자 인증이 설정되어 있지 않습니다\"
+                fi
+        else
+                echo \"[XXXX] Apache 서비스가 설치되어 있지 않습니다\"
 fi
 echo ]
 echo },
@@ -855,10 +856,10 @@ echo {
 echo \"subtitle\": \"38. Apache 불필요한 파일 제거\",
 echo \"result\": [
 if [ "$AI" ]
-	then
-		echo \"[수동조치권장] 웹 서버를 정기적으로 검사하여 불필요한 파일을 제거\"
-	else
-		echo \"[XXXX] Apache 서비스가 설치되어 있지 않습니다\"
+        then
+                echo \"[수동조치권장] 웹 서버를 정기적으로 검사하여 불필요한 파일을 제거\"
+        else
+                echo \"[XXXX] Apache 서비스가 설치되어 있지 않습니다\"
 fi
 echo ]
 echo },
@@ -867,16 +868,16 @@ echo {
 echo \"subtitle\": \"39. Apache 링크 사용 금지\",
 echo \"result\": [
 if [ "$AI" ]
-	then
+        then
     GV=`cat /etc/apache2/apache2.conf | grep Options | sed -n '1p'`
-		if [[ $GV == *FollowSymLinks* ]]
-			then
-				echo \"[취약] Apache 상에서 심볼릭 링크 사용이 설정되어 있습니다\"
-			else
-				echo \"[안전] Apache 상에서 심볼릭 링크 사용이 설정되어 있지 않습니다\"
-		fi
-	else
-		echo \"[XXXX] Apache 서비스가 설치되어 있지 않습니다\"
+                if [[ $GV == *FollowSymLinks* ]]
+                        then
+                                echo \"[취약] Apache 상에서 심볼릭 링크 사용이 설정되어 있습니다\"
+                        else
+                                echo \"[안전] Apache 상에서 심볼릭 링크 사용이 설정되어 있지 않습니다\"
+                fi
+        else
+                echo \"[XXXX] Apache 서비스가 설치되어 있지 않습니다\"
 fi
 echo ]
 echo },
@@ -910,8 +911,8 @@ echo {
 echo \"subtitle\": \"41. Apache 웹 서비스 영역 분리\",
 echo \"result\": [
 if [ "$AI" ]; then
-    DR=$(cat /etc/apache2/apache2.conf | grep DocumentRoot | sed -n '1p' | awk '{print $2}')
-    DD="/var/www/html"
+    DR=$(cat /etc/apache2/apache2.conf | grep DocumentRoot | sed -n '1p' | awk '{print $2}' | sed 's/"//g')
+    DD=/var/www/html
     if [ "$DR" = "$DD" ];
       then
         echo \"[취약] DocumentRoot에 설정된 디렉터리 : $DR\"

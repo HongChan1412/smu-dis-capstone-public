@@ -17,7 +17,7 @@ POST_MAX_SIZE="4M"
 # php.ini에서 upload_max_filesize 설정 변경
 if grep -q "^upload_max_filesize" $PHP_INI; then
     # 기존 설정이 존재한다면 수정
-    sed -i "s/^upload_max_filesize.*/upload_max_filesize = $UPLOAD_MAX_FILESIZE/" $PHP_INI
+    sudo sed -i "s/^upload_max_filesize.*/upload_max_filesize = $UPLOAD_MAX_FILESIZE/" $PHP_INI
 else
     # 존재하지 않는다면 추가
     echo "upload_max_filesize = $UPLOAD_MAX_FILESIZE" >> $PHP_INI
@@ -26,14 +26,14 @@ fi
 # php.ini에서 post_max_size 설정 변경
 if grep -q "^post_max_size" $PHP_INI; then
     # 기존 설정이 존재한다면 수정
-    sed -i "s/^post_max_size.*/post_max_size = $POST_MAX_SIZE/" $PHP_INI
+    sudo sed -i "s/^post_max_size.*/post_max_size = $POST_MAX_SIZE/" $PHP_INI
 else
     # 존재하지 않는다면 추가
     echo "post_max_size = $POST_MAX_SIZE" >> $PHP_INI
 fi
 
 # Apache 재시작하여 변경사항 적용
-systemctl restart httpd
+sudo systemctl restart httpd
 
 echo "업로드 가능한 파일의 최대 용량을 $UPLOAD_MAX_FILESIZE 로 설정하였습니다."
 
@@ -68,4 +68,3 @@ else
 fi
 
 echo
-
