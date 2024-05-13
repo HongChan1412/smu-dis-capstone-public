@@ -77,7 +77,7 @@ async def get_swdict_redhat(hostname: str, port: int, username: str, password: s
 
 
 async def get_docker_image(host: str, port: int, username: str, password: str):
-    command = "docker images --format \"{{.Repository}}:{{.Tag}}\""
+    command = "sudo docker images --format \"{{.Repository}}:{{.Tag}}\""
     try:
         async with asyncssh.connect(host, port=port, username=username, password=password, known_hosts=None) as conn:
             result = await conn.run(command, check=True)
@@ -97,7 +97,7 @@ async def run_remote_script(host: str, port: int, username: str, password: str, 
     try:
         async with asyncssh.connect(host, port=port, username=username, password=password, known_hosts=None) as conn:
             if script_path == "./scripts/common/restore_sudoers.sh":
-                script_content = f"sudo {script_path}"
+                script_content = f"sudo bash -c '{script_content}'"
             result = await conn.run(script_content, check=True)
             print(result.stdout, end='')
             return result.stdout
